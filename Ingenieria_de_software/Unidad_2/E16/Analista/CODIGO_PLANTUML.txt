@@ -1,0 +1,63 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Aspirante" as Asp
+actor "Administrador" as Admin
+actor "Soporte TI" as TI
+
+package "SISED - Gestión Documental Digital" {
+    
+    ' Casos de Uso Comunes
+    usecase "CU-01 Iniciar sesión" as UC_Login
+    usecase "CU-02 Recuperar contraseña" as UC_Recuperar
+    usecase "CU-03 Bloquear cuenta por intentos" as UC_Bloquear
+    
+    ' Casos de Uso: Aspirante
+    usecase "CU-04 Buscar vacantes activas" as UC_Buscar
+    usecase "CU-05 Solicitar eliminación de cuenta" as UC_Baja
+    usecase "CU-06 Cargar documento" as UC_Cargar
+    usecase "CU-07 Validar integridad del archivo" as UC_ValArchivo
+    usecase "CU-08 Enviar postulación" as UC_Enviar
+    usecase "CU-09 Verificar completitud de expediente" as UC_ValCompletitud
+    
+    ' Casos de Uso: Administrador
+    usecase "CU-10 Registrar usuario" as UC_RegUser
+    usecase "CU-11 Crear vacante" as UC_CrearVacante
+    usecase "CU-12 Evaluar documento" as UC_Evaluar
+    usecase "CU-13 Registrar observación justificativa" as UC_Observar
+    usecase "CU-14 Emitir dictamen final" as UC_Dictamen
+    usecase "CU-15 Exportar reportes y expedientes" as UC_Exportar
+    
+    ' Casos de Uso: Soporte TI
+    usecase "CU-16 Consultar bitácora de auditoría" as UC_Auditoria
+}
+
+' Relaciones de Actores
+Asp --> UC_Login
+Asp --> UC_Recuperar
+Asp --> UC_Buscar
+Asp --> UC_Cargar
+Asp --> UC_Enviar
+Asp --> UC_Baja
+
+Admin --> UC_Login
+Admin --> UC_Recuperar
+Admin --> UC_RegUser
+Admin --> UC_CrearVacante
+Admin --> UC_Evaluar
+Admin --> UC_Dictamen
+Admin --> UC_Exportar
+
+TI --> UC_Login
+TI --> UC_Auditoria
+
+' Relaciones INCLUDE (Comportamiento Obligatorio)
+UC_Cargar --> UC_ValArchivo : <<include>>
+UC_Enviar --> UC_ValCompletitud : <<include>>
+
+' Relaciones EXTEND (Comportamiento Condicional)
+UC_Bloquear .up.> UC_Login : <<extend>>
+UC_Observar .up.> UC_Evaluar : <<extend>>
+
+@enduml
