@@ -1,0 +1,261 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' --- CAPA DE ENTIDADES (Dominio) ---
+package "Entities" {
+    class Usuario <<entity>> {
+        - id : int
+        - nombre : String
+        - correo : String
+    }
+
+    class Rol <<entity>> {
+        - id : int
+        - nombreRol : String
+    }
+
+    class Vacante <<entity>> {
+        - id : int
+        - titulo : String
+        - fechaCierre : Date
+        - docsObligatorios : int
+    }
+
+    class Candidatura <<entity>> {
+        - id : int
+        - estado : String
+        - fechaPostulacion : Date
+    }
+
+    class Expediente <<entity>> {
+        - id : int
+        - vacante_id : int
+        - user_id : String
+        - codigo_expediente : String
+        - fecha_modifica : String
+    }
+
+    class Documento <<entity>> {
+        - id : int
+        - nombre : String
+        - mimeType : String
+        - pesoMB : float
+        - rutaObjectStore : String
+    }
+
+    class Comentario <<entity>> {
+        - id : int
+        - texto : String
+        - fecha : Date
+    }
+
+    class Alerta <<entity>> {
+        - id : int
+        - mensaje : String
+        - leida : boolean
+    }
+}
+
+' Relaciones Estructurales (Dominio)
+Usuario "*" -- "1" Rol : "tiene >"
+Usuario "1" -- "*" Candidatura : "genera >"
+Vacante "1" -- "*" Candidatura : "recibe >"
+Candidatura "1" -- "1" Expediente : "posee >"
+Expediente "1" *-- "1..*" Documento : "contiene fuerte >"
+Documento "1" -- "*" Comentario : "recibe >"
+Candidatura "1" -- "*" Alerta : "dispara >"
+
+
+' --- CAPA DE REPOSITORIOS (Persistencia) ---
+package "Repositories" {
+    class UsuarioRepository <<repository>> {
+        + insertarUsuario()
+        + obtenerPorCorreo()
+        + obtenerPorId()
+        + actualizarRolPK()
+        + verificarCorreoUnico()
+    }
+    
+    class AuthRepository <<repository>> {
+        + obtenerCredencialesPorCorreo()
+        + obtenerPrivilegiosPorRolId()
+        + registrarIntentoAcceso()
+        + insertarListaNegraToken()
+    }
+    
+    class VacanteRepository <<repository>> {
+        + insertarVacante()
+        + obtenerPorId()
+        + listarTodas()
+        + listarVigentesPorFecha()
+        + actualizarVacantePK()
+    }
+    
+    class CandidaturaRepository <<repository>> {
+        + insertarCandidatura()
+        + actualizarEstadoPK()
+        + obtenerPorId()
+        + listarPorIdVacante()
+        + listarPorIdUsuario()
+        + verificarPostulacionUnica()
+        + obtenerExpedienteAsociado()
+    }
+    
+    class ExpedientesRepository <<repository>> {
+        + insertarExpediente()
+        + obtenerPorId()
+        + obtenerPorCandidaturaId()
+        + insertarComentario()
+        + listarComentarioPorDocumentoId()
+        + eliminarComentarioPK()
+    }
+    
+    class DocumentoRepository <<repository>> {
+        + insertarMetadata()
+        + obtenerPorId()
+        + listarPorIdExpediente()
+        + verificarUnicidadTipoDocumento()
+        + eliminarRegistroFisico()   
+    }
+    
+    class AlertaRepository <<repository>> {
+        + insertarAlerta()
+        + listarPorCandidaturaId()
+        + listarNoLeidas()
+        + actualizarEstadoLeidaPK()
+    }
+}
+
+
+' --- CAPA DE SERVICIOS (Lógica de Negocio) ---
+package "Services" {
+    class UsuarioService <<service>> {
+        + registrarNuevoUsuario()
+        + autenticarUsuario()
+        + asignarRolAUsuario()
+        + verificarVigenciaAcceso()
+        + obtenerPerfilUsuario()
+    }
+    
+    class AuthService <<service>> {
+        + verificarCredencialesUsuario()
+        + generarTokenAcceso()
+        + validarTokenYExtraerRol()
+        + verificarPermisosPorRol()
+        + revocarSesionActiva()
+    }
+    
+    class VacanteService <<service>> {
+        + crearNuevaVacante()
+        + obtenerVacantesActivas()
+        + obtenerDetalleVacante()
+        + modificarConfiguracionVacante()
+        + evaluarVigenciaVacantes()
+    }
+    
+    class CandidaturaService <<service>> {
+        + obtenerExpedienteDeCandidatura()
+        + validarCompletitudExpediente()
+        + crearCandidaturaConExpediente()
+        + actualizarEstatusTrámite()
+        + desestimarCandidatura()
+        + obtenerCandidaturasPorVacante()
+        + obtenerCandidaturasPorUsuario()
+        + notificarCambioEstado()
+    }
+    
+    class ExpedientesService <<service>> {
+        + crearExpedienteInicial()
+        + consolidarDocumentosExpediente()
+        + evaluarProgresoExpediente()
+        + agregarComentarioADocumento()
+        + obtenerHistorialComentarios()
+        + eliminarComentarioError()
+    }
+    
+    class DocumentoService <<service>> {
+        + procesarYCargarDocumento()
+        + generarVistaSinDescarga()
+        + obtenerExpedienteDocumental()
+        + reemplazarDocumentoRechazado()
+    }
+    
+    class AlertaService <<service>> {
+        + generarAlertaPorCambioEstado()
+        + obtenerAlertasNoLeidas()
+        + marcarAlertaComoLeida()
+    }
+}
+
+
+' --- CAPA DE CONTROLADORES (Orquestación) ---
+package "Controllers" {
+    class UsuarioController <<controller>> {
+        + validarEstructuraRegistro()
+        + validarCredencialesLogin()
+        + validarFormatoCorreo()
+        + enrutarAsignacionRol()
+    }
+    
+    class AuthController <<controller>> {
+        + validarFormatoCredenciales()
+        + validarCabeceraAutorizacion()
+        + enrutarInicioSesion()
+        + enrutarCierreSesion()
+        + enrutarRenovacionToken()
+    }
+    
+    class VacanteController <<controller>> {
+        + validarCamposVacante()
+        + validarFechaCierre()
+        + enrutarCreacionVacante()
+        + enrutarActualizacionVacante()
+        + enrutarListadoVacantes()
+    }
+    
+    class CandidaturaController <<controller>> {
+        + validarPeticionPostulacion()
+        + validarCambioEstado()
+        + validarPermisosLectura()
+        + enrutarDesestimacion()
+        + validarAccesoExpediente()
+        + enrutarRevisionExpediente()   
+    }
+    
+    class ExpedientesController <<controller>> {
+        + validarPeticionConsultaExpediente()
+        + enrutarValidacionDocumental()
+    }
+    
+    class DocumentoController <<controller>> {
+        + validarPeticionCarga()
+        + validarExtensionYTamanoBasico()
+        + validarPermisosAcceso()
+        + enrutarPrevisualizacion()
+    }
+    
+    class AlertaController <<controller>> {
+        + validarPeticionNotificaciones()
+        + enrutarMarcadoLectura()
+    }
+}
+
+' --- DEPENDENCIAS ARQUITECTÓNICAS ---
+UsuarioController --> UsuarioService
+AuthController --> AuthService
+VacanteController --> VacanteService
+ExpedientesController --> ExpedientesService
+CandidaturaController --> CandidaturaService
+DocumentoController --> DocumentoService
+AlertaController --> AlertaService
+
+UsuarioService --> UsuarioRepository
+AuthService --> VacanteRepository
+VacanteService --> VacanteRepository
+ExpedientesService --> ExpedientesRepository
+CandidaturaService --> CandidaturaRepository
+CandidaturaService --> DocumentoService : "verifica docs"
+DocumentoService --> DocumentoRepository
+AlertaService --> AlertaRepository
+@enduml

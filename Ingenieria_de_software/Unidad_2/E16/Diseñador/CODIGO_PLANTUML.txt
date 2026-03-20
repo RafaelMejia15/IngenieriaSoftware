@@ -1,0 +1,197 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ==========================================
+' ENUMERACIONES
+' ==========================================
+enum EstadoPostulacionEnum {
+  EN_BORRADOR
+  EN_REVISION
+  ACEPTADA
+  RECHAZADA
+}
+
+enum EstadoDocumentoEnum {
+  PENDIENTE
+  ACEPTADO
+  RECHAZADO
+}
+
+' ==========================================
+' MÓDULO: IDENTIDAD Y SEGURIDAD
+' ==========================================
+class Rol {
+  - id: Long
+  - nombre: String
+  - descripcion: String
+  + getPermisos(): List<String>
+}
+
+class Usuario {
+  - id: Long
+  - correo: String
+  - passwordHash: String
+  - estaActivo: Boolean
+  - fechaRegistro: LocalDateTime
+  - rol: Rol
+  - documentosBase: List<Documento>
+  + autenticar(pass: String): Boolean
+  + subirDocumentoPerfil(doc: Documento)
+}
+
+class Aspirante {
+  - nombre: String
+  - curp: String
+  - fechaNacimiento: LocalDate
+  - postulaciones: List<Postulacion>
+  + calcularEdad(): Integer
+  + crearPostulacion(p: Promocion): Postulacion
+}
+
+' ==========================================
+' MÓDULO: PROMOCIONES
+' ==========================================
+class TipoDocente {
+  - id: Long
+  - nombre: String
+  + getNombre(): String
+}
+
+class NivelPromocion {
+  - id: Long
+  - nivel: String
+  + getNivel(): String
+}
+
+class Promocion {
+  - id: Long
+  - sufijoClave: String
+  - tieneMedioTiempo: Boolean
+  - tiene34Tiempo: Boolean
+  - tieneTiempoCompleto: Boolean
+  - referenciaArticulo: String
+  - tipoDocente: TipoDocente
+  - nivelPromocion: NivelPromocion
+  - grupoRequisitoRaiz: GrupoRequisito
+  + generarClaveCompleta(): String
+  + obtenerRequisitos(): List<GrupoRequisito>
+}
+
+' ==========================================
+' MÓDULO: MOTOR DE REQUISITOS (COMPOSITE)
+' ==========================================
+class GrupoRequisito <<Composite>> {
+  - id: Long
+  - operadorLogico: String
+  - etiqueta: String
+  - esObligatorio: Boolean
+  - subGrupos: List<GrupoRequisito>
+  - condiciones: List<CondicionDetalle>
+  + evaluar(docs: List<Documento>): Boolean
+  + agregarSubGrupo(g: GrupoRequisito)
+}
+
+class Parametro {
+  - id: Long
+  - codigo: String
+  - tipoDato: String
+  + validarTipoDato(valor: String): Boolean
+}
+
+class CondicionDetalle <<Leaf>> {
+  - id: Long
+  - operadorComparacion: String
+  - valorEsperado: String
+  - parametro: Parametro
+  + evaluar(doc: Documento): Boolean
+}
+
+' ==========================================
+' MÓDULO: APLICACIÓN Y EVIDENCIA
+' ==========================================
+class Postulacion {
+  - id: Long
+  - fechaSolicitud: LocalDateTime
+  - estado: EstadoPostulacionEnum
+  - aspirante: Aspirante
+  - promocion: Promocion
+  - documentosRequisito: List<Documento>
+  + validarRequisitos(): Boolean
+  + enviarARevision()
+}
+
+class Documento {
+  - id: Long
+  - nombreArchivoOriginal: String
+  - urlAlmacenamiento: String
+  - fechaCarga: LocalDateTime
+  - estado: EstadoDocumentoEnum
+  - parametroVinculado: Parametro
+  - observaciones: List<Observacion>
+  + cambiarEstado(estado: EstadoDocumentoEnum)
+  + agregarObservacion(obs: Observacion)
+}
+
+class Observacion {
+  - id: Long
+  - fecha: LocalDateTime
+  - comentario: String
+  - revisor: Usuario
+  + getResumen(): String
+}
+
+' ==========================================
+' MÓDULO: AUDITORÍA
+' ==========================================
+class BitacoraAuditoria {
+  - id: Long
+  - timestamp: LocalDateTime
+  - accion: String
+  - tablaAfectada: String
+  - entidadId: String
+  - valoresAnteriores: String
+  - valoresNuevos: String
+  - direccionIp: String
+  - usuario: Usuario
+  + registrarEvento()
+}
+
+' ==========================================
+' RELACIONES
+' ==========================================
+
+' Herencia
+Usuario <|-- Aspirante
+
+' Seguridad y Usuarios
+Usuario "*" --> "1" Rol : tiene >
+
+' Promociones
+Promocion "*" o-- "1" TipoDocente : clasifica con >
+Promocion "*" o-- "1" NivelPromocion : nivel de >
+
+' Motor de Requisitos (Patrón Composite)
+Promocion *-- "1" GrupoRequisito : define reglas >
+GrupoRequisito *-- "*" GrupoRequisito : anida >
+GrupoRequisito *-- "*" CondicionDetalle : contiene >
+CondicionDetalle --> "1" Parametro : basado en >
+
+' Postulaciones
+Postulacion "*" --> "1" Aspirante : realizada por >
+Postulacion "*" --> "1" Promocion : aplica a >
+Postulacion "*" --> "1" EstadoPostulacionEnum : estado actual >
+
+' Documentos y Evidencias
+Usuario "1" --> "*" Documento : sube perfil >
+Postulacion *-- "*" Documento : requiere evidencia >
+Documento "*" --> "1" Parametro : comprueba >
+Documento "*" --> "1" EstadoDocumentoEnum : estado actual >
+Documento *-- "*" Observacion : contiene >
+Observacion "*" --> "1" Usuario : revisada por >
+
+' Auditoría
+BitacoraAuditoria "*" --> "1" Usuario : accion realizada por >
+
+@enduml
