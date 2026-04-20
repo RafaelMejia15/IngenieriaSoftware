@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: automecture_user
+      POSTGRES_PASSWORD: automecture_pass_01
+      POSTGRES_DB: automecture_database
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build: 
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+    ports:
+      - "8500:8500"
+    environment:
+      - DATABASE_URL=postgresql://automecture_user:automecture_pass_01@db:5432/automecture_database
+    depends_on:
+      - db
+
+volumes:
+  db_data:
