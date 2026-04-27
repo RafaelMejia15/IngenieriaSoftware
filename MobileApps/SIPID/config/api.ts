@@ -3,8 +3,8 @@ import axios from "axios";
 // 1. Validar que la URL exista (si no, axios lanzará errores crípticos)
 //const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-//const API_URL = "http://localhost:8080";
-const API_URL = "https://uwu.merexis.com";
+// const API_URL = "http://localhost:8080";
+const API_URL = "https://uwu.dantech.com.mx";
 
 if (!API_URL) {
   console.error(

@@ -1,44 +1,50 @@
 import { Button } from '@/components/ui/Button';
 import { InputField } from '@/components/ui/InputField';
-import { useLoginMutation } from '@/features/index/api/authMutation';
+import { SelectField } from '@/components/ui/SelectField';
+import { useRegisterMutation } from '@/features/index/api/authMutation';
+import { UserRole } from '@/types/user.types';
 import { useRouter } from 'expo-router';
 import { Formik } from 'formik';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 import * as Yup from 'yup';
 
-
-// Esquema de validación con Yup
-// Yup es como "zod" pero más compatible con Formik
-const LoginSchema = Yup.object().shape({
+const RegisterSchema = Yup.object().shape({
   email: Yup.string()
     .email('Ingresa un correo válido')
     .required('El correo es requerido'),
   password: Yup.string()
     .min(6, 'Mínimo 6 caracteres')
     .required('La contraseña es requerida'),
+  rol: Yup.string()
+    .oneOf(['usuario', 'admin'])
+    .required('El rol es requerido'),
 });
 
-export default function LoginScreen() {
-  // useRouter es el equivalente de useNavigate() en react-router-dom
-  const router = useRouter();
+const rolOptions = [
+  { label: 'Usuario', value: 'usuario' },
+  { label: 'Admin',   value: 'admin' },
+];
 
-  const { mutateAsync: loginAction, isPending } = useLoginMutation();
+export default function RegisterScreen() {
+  const router = useRouter();
+  const { mutateAsync: registerAction, isPending } = useRegisterMutation();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleLogin = async (values: { email: string; password: string }) => {
+  const handleRegister = async (values: {
+    email: string;
+    password: string;
+    rol: UserRole;
+  }) => {
     try {
-      await loginAction(values);
+      await registerAction(values);
       router.replace('/(tabs)/hub');
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      setErrorMessage('Usuario o contraseña incorrecta');
+    } catch {
+      setErrorMessage('Error al crear la cuenta. Intenta de nuevo.');
     }
-  }
+  };
 
   return (
-    // KeyboardAvoidingView sube el contenido cuando el teclado virtual aparece,
-    // equivalente a nada en web (el browser lo maneja solo), pero en móvil es esencial
     <KeyboardAvoidingView
       className="flex-1 bg-zinc-950"
       behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined}
@@ -49,26 +55,19 @@ export default function LoginScreen() {
         {/* Encabezado */}
         <View className="mb-10">
           <Text className="text-3xl font-bold text-white tracking-tight">
-            Bienvenido
+            Crear cuenta
           </Text>
           <Text className="text-sm text-zinc-400 mt-1">
-            Inicia sesión para continuar
+            Regístrate para continuar
           </Text>
         </View>
 
-        {/*
-          Formik funciona igual que en React Web:
-          - initialValues: valores iniciales del formulario
-          - validationSchema: reglas de validación (Yup)
-          - onSubmit: función que se llama cuando el formulario es válido
-          - values, errors, touched, handleChange, handleSubmit: mismos conceptos que en web
-        */}
         <Formik
-          initialValues={{ email: '', password: '' }}
-          validationSchema={LoginSchema}
-          onSubmit={handleLogin}
+          initialValues={{ email: '', password: '', rol: 'usuario' as UserRole }}
+          validationSchema={RegisterSchema}
+          onSubmit={handleRegister}
         >
-          {({ values, errors, touched, handleChange, setFieldTouched, handleSubmit, isSubmitting }) => (
+          {({ values, errors, touched, handleChange, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
             <View className="gap-4">
               <InputField
                 label="Correo"
@@ -91,9 +90,17 @@ export default function LoginScreen() {
                 secureTextEntry
               />
 
+              <SelectField
+                label="Rol"
+                value={values.rol}
+                options={rolOptions}
+                onChange={(val) => setFieldValue('rol', val)}
+                error={touched.rol && errors.rol ? errors.rol : undefined}
+              />
+
               <View className="mt-2">
                 <Button
-                  label="Iniciar sesión"
+                  label="Crear cuenta"
                   onPress={() => handleSubmit()}
                   loading={isSubmitting || isPending}
                 />
@@ -101,31 +108,22 @@ export default function LoginScreen() {
             </View>
           )}
         </Formik>
+
         {errorMessage && (
           <View className="mt-2">
             <Text className="text-red-400 text-md text-center">{errorMessage}</Text>
           </View>
         )}
 
-        {/* Links de navegación */}
-        <View className="mt-6 gap-3 items-center">
-          <Pressable onPress={() => router.push('/forgot-password')}>
-            <Text className="text-zinc-500 text-sm">
-              ¿Olvidaste tu contraseña?{' '}
-              <Text className="text-white font-semibold">Recupérala aquí</Text>
-            </Text>
-          </Pressable>
-
-          <Pressable onPress={() => router.push('/register')}>
-            <Text className="text-zinc-500 text-sm">
-              ¿No tienes cuenta?{' '}
-              <Text className="text-white font-semibold">Regístrate</Text>
-            </Text>
-          </Pressable>
-        </View>
+        {/* Link al Login */}
+        <Pressable onPress={() => router.replace('/')} className="mt-6 items-center">
+          <Text className="text-zinc-500 text-sm">
+            ¿Ya tienes cuenta?{' '}
+            <Text className="text-white font-semibold">Iniciar sesión</Text>
+          </Text>
+        </Pressable>
 
       </View>
     </KeyboardAvoidingView>
   );
 }
-
