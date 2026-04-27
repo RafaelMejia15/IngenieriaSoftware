@@ -52,7 +52,7 @@ BEGIN
     WHERE token_recuperacion = p_token
       AND token_recuperacion_expira IS NOT NULL
       AND token_recuperacion_expira > NOW()
-    RETURNING id_usuario INTO v_id;
+    RETURNING usuario.id_usuario INTO v_id;
 
     IF v_id IS NULL THEN
         RAISE EXCEPTION 'Token de recuperación inválido o expirado'

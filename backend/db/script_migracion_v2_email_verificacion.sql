@@ -50,7 +50,7 @@ BEGIN
         v_id_rol, p_correo, p_password_hash, FALSE,
         p_token_verificacion, p_token_expira
     )
-    RETURNING id_usuario INTO v_id_usuario;
+    RETURNING usuario.id_usuario INTO v_id_usuario;
 
     RETURN QUERY
     SELECT
@@ -82,7 +82,7 @@ BEGIN
     WHERE token_verificacion = p_token
       AND token_verificacion_expira IS NOT NULL
       AND token_verificacion_expira > NOW()
-    RETURNING id_usuario INTO v_id;
+    RETURNING usuario.id_usuario INTO v_id;
 
     IF v_id IS NULL THEN
         RAISE EXCEPTION 'Token inválido o expirado'
