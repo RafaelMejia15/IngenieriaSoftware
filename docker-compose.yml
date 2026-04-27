@@ -21,6 +21,12 @@ services:
       - "8500:8500"
     environment:
       - DATABASE_URL=postgresql://automecture_user:automecture_pass_01@db:5432/automecture_database
+      - VERIFICATION_BASE_URL=https://d561t2pbktp9t.cloudfront.net
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM}
     depends_on:
       - db
 
