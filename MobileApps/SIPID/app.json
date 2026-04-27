@@ -13,17 +13,16 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#E6F4FE"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.automecture.sipid"
     },
     "web": {
-      "output": "static",
       "favicon": "./assets/images/favicon.png",
+      "output": "single",
       "bundler": "metro"
     },
     "plugins": [
@@ -43,7 +42,13 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
+      "reactCompiler": false
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c46e54cc-ceb0-4409-9239-93b18afb59d7"
+      }
     }
   }
 }

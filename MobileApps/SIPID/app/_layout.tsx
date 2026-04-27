@@ -1,25 +1,79 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import "../global.css";
+import { useAuthStore } from '@/stores/useAuthStore';
+import { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs(false);
 
-// QueryClient es la "instancia central" de React Query.
-// Guarda el caché, maneja los estados de carga/error/éxito.
-// Debe existir UNO solo en toda la app, justo aquí en el layout raíz.
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
 
-export default function RootLayout() {
+function RootLayoutNav() {
+  const { token } = useAuthStore();
+  const segments = useSegments();
+  const router = useRouter();
+  const [isReady, setIsReady] = useState(false);
+
+  // En RootLayoutNav, reemplaza el primer useEffect con:
+  useEffect(() => {
+    const hydrated = useAuthStore.persist.hasHydrated();
+    if (hydrated) {
+      setIsReady(true);
+      return;
+    }
+
+    const unsub = useAuthStore.persist.onFinishHydration(() => {
+      setIsReady(true);
+    });
+
+    // Fallback de seguridad: si tarda más de 3s, forzamos isReady
+    const timeout = setTimeout(() => setIsReady(true), 3000);
+
+    return () => {
+      unsub();
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    const inAuthGroup = segments[0] === '(tabs)';
+
+    if (!token && inAuthGroup) {
+      router.replace('/');
+    } else if (token && !inAuthGroup) {
+      router.replace('/(tabs)/hub');
+    }
+  }, [token, segments, isReady]);
+
+  // Mientras Zustand rehidrata, mostramos un fondo negro para evitar flash de blanco
+  if (!isReady) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#09090b', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator color="#ffffff" />
+      </View>
+    );
+  }
+
   return (
-    // QueryClientProvider es como Context.Provider — hace disponible
-    // el queryClient a todos los componentes hijos de la app.
-    // Sin él, cualquier hook de React Query (useMutation, useQuery) falla.
-    <QueryClientProvider client={queryClient}>
-      <Stack>
-        {/* "index" = app/index.tsx = pantalla de login */}
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        {/* "(tabs)" = carpeta app/(tabs)/ con su propio layout */}
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </QueryClientProvider>
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
   );
 }
 
+export default function RootLayout() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RootLayoutNav />
+    </QueryClientProvider>
+  );
+}
