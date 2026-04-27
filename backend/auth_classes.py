@@ -167,6 +167,7 @@ class AuthService:
         except SQLAlchemyError as e:
             db.rollback()
             msg = str(e.orig) if getattr(e, "orig", None) else str(e)
+            print("Falle  aqui", e, flush=True)
             if "el correo ya está registrado" in msg.lower() or "23505" in msg:
                 raise HTTPException(
                     status_code=409, detail="El correo ya está registrado"
