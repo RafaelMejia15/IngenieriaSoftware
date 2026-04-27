@@ -29,6 +29,7 @@ const rolOptions = [
 export default function RegisterScreen() {
   const router = useRouter();
   const { mutateAsync: registerAction, isPending } = useRegisterMutation();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleRegister = async (values: {
@@ -38,9 +39,11 @@ export default function RegisterScreen() {
   }) => {
     try {
       await registerAction(values);
-      router.replace('/(tabs)/hub');
+      setSuccessMessage('Cuenta creada. Revisa tu correo para activarla.');
+      setErrorMessage(null);
     } catch {
       setErrorMessage('Error al crear la cuenta. Intenta de nuevo.');
+      setSuccessMessage(null);
     }
   };
 
@@ -109,11 +112,18 @@ export default function RegisterScreen() {
           )}
         </Formik>
 
+        {successMessage && (
+          <View className="mt-4 bg-zinc-900 border border-zinc-700 rounded-xl p-4">
+            <Text className="text-white text-sm text-center">{successMessage}</Text>
+          </View>
+        )}
+
         {errorMessage && (
           <View className="mt-2">
             <Text className="text-red-400 text-md text-center">{errorMessage}</Text>
           </View>
         )}
+
 
         {/* Link al Login */}
         <Pressable onPress={() => router.replace('/')} className="mt-6 items-center">

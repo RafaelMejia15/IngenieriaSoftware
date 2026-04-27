@@ -14,55 +14,56 @@ export const useLoginMutation = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
 
   return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      login(email, password),
-    onSuccess: (response) => {
-      const mockToken = "temp_mock_token_123";
-      const mockUser: User = {
-        username: response.rol,
-        nombre: response.msg,
-        email: "temporal@prueba.com",
-        apellidoPaterno: "",
-        apellidoMaterno: "",
-      };
-      setAuth(mockToken, mockUser);
+    mutationFn: ({ email, password }: { email: string; password: string }) => {
+      console.log("[LOGIN] payload →", { email, password });
+      return login(email, password);
     },
-    onError: (error) => {
-      console.error("Error en login:", error);
-    },
-  });
-};
-
-// ─── Register ─────────────────────────────────────────────────────────────────
-export const useRegisterMutation = () => {
-  const setAuth = useAuthStore((state) => state.setAuth);
-
-  return useMutation({
-    mutationFn: (payload: RegisterPayload) => register(payload),
     onSuccess: (response) => {
-      // El registro confirma correctamente — guardamos sesión igual que login
-      const mockToken = "temp_mock_token_123";
-      const mockUser: User = {
+      console.log("[LOGIN] response →", response);
+      const tempToken = "temp_mock_token_123";
+      const user: User = {
         username: response.rol,
         nombre: response.msg,
         email: "",
         apellidoPaterno: "",
         apellidoMaterno: "",
       };
-      setAuth(mockToken, mockUser);
+      setAuth(tempToken, user);
     },
     onError: (error) => {
-      console.error("Error en registro:", error);
+      console.error("[LOGIN] error →", error);
     },
   });
 };
 
-// ─── Validate User (deep link desde correo) ───────────────────────────────────
+// ─── Register ─────────────────────────────────────────────────────────────────
+export const useRegisterMutation = () => {
+  return useMutation({
+    mutationFn: (payload: RegisterPayload) => {
+      console.log("[REGISTER] payload →", payload);
+      return register(payload);
+    },
+    onSuccess: (response) => {
+      console.log("[REGISTER] response →", response);
+    },
+    onError: (error) => {
+      console.error("[REGISTER] error →", error);
+    },
+  });
+};
+
+// ─── Validate User ────────────────────────────────────────────────────────────
 export const useValidateUserMutation = () => {
   return useMutation({
-    mutationFn: (token: string) => validateUser(token),
+    mutationFn: (token: string) => {
+      console.log("[VALIDATE-USER] token →", token);
+      return validateUser(token);
+    },
+    onSuccess: (response) => {
+      console.log("[VALIDATE-USER] response →", response);
+    },
     onError: (error) => {
-      console.error("Error al validar cuenta:", error);
+      console.error("[VALIDATE-USER] error →", error);
     },
   });
 };
@@ -70,20 +71,33 @@ export const useValidateUserMutation = () => {
 // ─── Forgot Password ──────────────────────────────────────────────────────────
 export const useForgotPasswordMutation = () => {
   return useMutation({
-    mutationFn: (email: string) => forgotPassword({ email }),
+    mutationFn: (email: string) => {
+      console.log("[FORGOT-PASSWORD] payload →", { email });
+      return forgotPassword({ email });
+    },
+    onSuccess: (response) => {
+      console.log("[FORGOT-PASSWORD] response →", response);
+    },
     onError: (error) => {
-      console.error("Error al enviar correo de recuperación:", error);
+      console.error("[FORGOT-PASSWORD] error →", error);
     },
   });
 };
 
-// ─── Reset Password (deep link desde correo) ──────────────────────────────────
+// ─── Reset Password ───────────────────────────────────────────────────────────
 export const useResetPasswordMutation = () => {
   return useMutation({
-    mutationFn: (payload: ResetPasswordPayload) => resetPassword(payload),
+    mutationFn: (payload: ResetPasswordPayload) => {
+      console.log("[RESET-PASSWORD] payload →", payload);
+      return resetPassword(payload);
+    },
+    onSuccess: (response) => {
+      console.log("[RESET-PASSWORD] response →", response);
+    },
     onError: (error) => {
-      console.error("Error al restablecer contraseña:", error);
+      console.error("[RESET-PASSWORD] error →", error);
     },
   });
 };
+
 
