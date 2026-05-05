@@ -15,6 +15,7 @@ from schemas import (
     RegisterRequest,
     ResetPasswordRequest,
 )
+from security import create_access_token
 
 router = APIRouter()
 
@@ -24,7 +25,19 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
     user_data = auth_service.authenticate_user(
         request.email, request.password, db
     )
-    return JSONResponse(content={"msg": "OK", "rol": user_data.nombre_rol})
+    access = create_access_token(
+        email=request.email,
+        id_usuario=user_data.id_usuario,
+        rol=user_data.nombre_rol,
+    )
+    return JSONResponse(
+        content={
+            "msg": "OK",
+            "rol": user_data.nombre_rol,
+            "access_token": access,
+            "token_type": "bearer",
+        }
+    )
 
 
 @router.post("/register")

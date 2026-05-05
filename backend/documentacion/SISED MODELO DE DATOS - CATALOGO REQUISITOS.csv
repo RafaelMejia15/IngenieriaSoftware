@@ -1,0 +1,204 @@
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,CATALOGO REQUISITOS CATEGORIAS,,,,,,,GRUPOS DE REQUISITOS,,,,,,,CONDICIONES,,,,
+,ID_Requisito,Código,Nombre del Requisito,Descripción,Tipo Resumen Comprobante,,,ID_Grupo,ID_Categoria_Promovibles,ID_Grupo_Padre,"Tipo Grupo (RAIZ, INDISPENSABLE, ALTERNATIVA_UNO, ALTERNATIVA_DOS, SUBOPCION)",Operador Lógico,,,ID_Condicion,ID_Grupo,ID_Requisito,Operador,Valor Esperado
+,P01,ESCOLARIDAD,ESCOLARIDAD: TÍTULO O GRADO O DOCUMENTO COMPROBATORIO,"Fecha de obtención del documento, por la opción 
+de escolaridad que participa (titulado, sin grado o con grado)Anexar copia fiel del Título o Grado o documento comprobatorio, anotando en 
+el espacio de observaciones la fecha de obtención del documento, por la opción 
+de escolaridad que participa (titulado, sin grado o con grado). ",SITUACION_GENERAL,,,,,,,,,,,,,,
+,P02,CEDULA_PROF,CÉDULA PROFESIONAL,"Anexar copia fiel de la cédula profesional, anotando en el espacio de observaciones el número de la misma.",SITUACION_GENERAL,,,,,,,,,,,,,,
+,P03,CERT_ESTUD__CART_PAS,CERTIFICADO DE ESTUDIOS O CARTA PASANTE,"En el caso de comprobar experiencia profesional, deberá anexar copia fiel del certificado o carta de pasante, anotando en el espacio de observaciones, la fecha de expedición del mismo",SITUACION_GENERAL,,,,,,,,,,,,,,
+,P04,HORARIO_ACT,HORARIO DE ACTIVIDADES DEL SEMESTRE ANTERIOR Y ACTUAL,"Anexar copia fiel del horario institucional de actividades del semestre anterior 
+y actual, debidamente requisitados y firmados por las autoridades 
+correspondientes.  
+ 
+Para los casos que no se encuentran frente a grupo (únicamente CRODE´S), 
+de igual manera se anexará copia fiel del horario de trabajo, donde deberá 
+estar especificado en qué área y tipo de actividad se encuentra desarrollando 
+actualmente, de no ser así, se anexará al horario de trabajo una constancia 
+expedida por la autoridad responsable, detallando lo anteriormente solicitado.",SITUACION_GENERAL,,,,,,,,,,,,,,
+,P05,LIBERACION_ACT,HOJA DE LIBERACIÓN DE ACTIVIDADES (CUMPLIMIENTO SATISFACTORIO) DEL ÚLTIMO SEMESTRE CONCLUIDO,Anexar copia fiel de la liberación de actividades (cumplimiento satisfactorio) del último semestre concluido.,SITUACION_GENERAL,,,,,,,,,,,,,,
+,P06,TALONES_PAGO,COPIA(S) DEL TALÓN(ES) DE PAGO DE LA ÚLTIMA QUINCENA ÚNICAMENTE CLAVE(S) A PROMOVER,"Anexar copia fiel de talón (es) de pago de la última quincena (únicamente 
+clave(s) a promover) anotando en el espacio de observaciones a que periodo 
+pertenece, ejemplo: 2025/04 (año/qna). 
+",SITUACION_GENERAL,,,,,,,,,,,,,,
+,P07,CONSTANCIA_NOMB,COPIA(S) DE SU(S) CONSTANCIA(S) DE NOMBRAMIENTO(S) DE LA(S) CLAVE(S) A PROMOCIONAR,Anexar copia fiel de la(s) constancia(s) de nombramiento(s) actual(es). ,SITUACION_GENERAL,,,,,,,,,,,,,,
+,P08,AUTORIZACION_SABATICO,OFICIO DE AUTORIZACIÓN PARA LOS CASOS QUE SE ENCUENTREN EN AÑO SABÁTICO,Anexar copia fotostática del oficio de autorización anotando en el espacio de observaciones el número de oficio de autorización. ,SITUACION_GENERAL,,,,,,,,,,,,,,
+,P09,ELABORACION_APUNTES,ELABORACIÓN DE APUNTES,"Se consideran las publicaciones académicas internas, en una Institución cuyo material debe presentarse impreso y cubrir un curso o programa de asignatura completo. Presentarán constancia firmada por el jefe del departamento correspondiente, donde se haya realizado la actividad, indicando el nombre del 
+trabajo elaborado, periodo de realización (inicio y término), nombre de la asignatura y grado en que se utiliza y anexar un ejemplar en fotocopia cotejada de los apuntes correspondientes. (La actividad deberá ser con fecha posterior a la última promoción del docente). ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P10,ELABORACION_TEXTOS,ELABORACIÓN DE TEXTOS,"Se considera la elaboración de libros de consulta para un curso o asignatura 
+completa. Presentará constancia firmada por el jefe del departamento 
+correspondiente, donde se haya realizado la actividad indicando el nombre del 
+trabajo elaborado, periodo de realización (inicio y término), nombre de la 
+asignatura y grado en que se utiliza y anexar un ejemplar en fotocopia cotejada 
+del texto correspondiente. (La actividad deberá ser con fecha posterior a la 
+última promoción del docente). ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P11,ELABORACION_MATERIAL_DIDACTICO,ELABORACIÓN DE MATERIAL DIDÁCTICO,"Presentarán constancia firmada por el jefe del departamento correspondiente, 
+donde se haya realizado la actividad, describiendo e indicando el tipo de 
+material que se elaboró (audiovisual, documental, gráfico, etc.), periodo de 
+elaboración (inicio y término), nombre de la asignatura y grado en que se 
+utiliza, en los casos que así proceda, se deberá anexar un ejemplar en fotocopia 
+cotejada del material elaborado. (La actividad deberá ser con fecha posterior 
+a la última promoción del docente). ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P12,ELABORACION_APOYOS_DOCENTES,ELABORACIÓN DE OTROS APOYOS DOCENTES,"Se consideran las asesorías de tesis, sinodalías en exámenes profesionales, elaboración de planes y programas de estudio, cursos de inducción, cursos de regularización, asesoría a estudiantes y pasantes, asesoría en proyectos de extensión y servicio social, asesorías de residencias profesionales, elaboración de antologías, manuales de laboratorio, cursos especiales impartidos, etc. Será necesario presentar constancia firmada por el jefe del departamento respectivo, indicando la descripción del apoyo, en qué nivel se aplicó (superior o posgrado), periodo realizado (inicio y término) y anexar un ejemplar en fotocopia cotejada del apoyo correspondiente. (La actividad deberá ser con fecha posterior a la última promoción del docente).",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P13,PUBLICACIONES_TECNICO_CIENTIFICAS,PUBLICACIONES TÉCNICO CIENTÍFICAS,"Se consideran los trabajos de publicaciones de carácter tecnológico y científico, 
+los artículos resultados de una investigación o bien artículos basados en 
+revisiones bibliográficas, con aportaciones inéditas por parte del interesado, 
+publicados en revistas especializadas de circulación institucional, nacional o 
+internacional, o en memorias de congresos, simposio, seminarios o 
+convenciones.  
+Deberán presentar constancia firmada y sellada por el Director del centro de 
+trabajo, mencionando quien la elaboró, nombre del artículo, revista que lo 
+publicó, Tipo de circulación (institucional, nacional o internacional), tipo de 
+evaluación (con editorial o con jurado) y fecha de la misma, anexando fotocopia 
+cotejada de la publicación o un ejemplar de la misma. 
+En caso de que la publicación sea en idioma extranjero (diferente al español o 
+inglés), se enviará la traducción al español o inglés correspondiente, cotejada 
+por el Director de que corresponde al texto original. 
+Se consideran las publicaciones realizadas hasta con 5 años de anterioridad 
+a la fecha de la promoción docente actual, siempre y cuando no hayan sido 
+consideradas en promociones anteriores. (En caso de que la categoría actual 
+haya requerido este mismo requisito y la investigación sea con fecha anterior a 
+su última promoción, necesita anexar constancia de la H. Comisión 
+Dictaminadora o del Director indicando que no fue utilizada en su promoción 
+anterior). 
+Nota: No se consideran como Publicaciones Técnico - Científicas, las 
+publicaciones en periódicos, los manuales, apuntes, textos, folletos, boletines, 
+catálogos o tesis de cualquier tipo. Ni tampoco se considera un artículo con 
+carácter Técnico-Científico, cuando sólo se trata de una compilación de datos o 
+informes con propósitos de divulgación.  ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P14,INVESTIGACIONES,INVESTIGACIONES REALIZADAS O INVESTIGACIONES REALIZADAS Y DIRIGIDAS,"Se consideran las actividades que el personal académico realiza, en programas 
+de investigación científica, tecnológica o educativa de la Institución o de un 
+Organismo externo; se consideran proyectos concluidos, o bien metas 
+específicas alcanzadas dentro de un proyecto de mediano o largo plazo. 
+Deberán presentar constancia expedida por el Director del centro de trabajo, 
+indicando nombre del investigador, nombre de la investigación, periodo de 
+realización (inicio y término), nivel de participación (director de la investigación 
+y/o investigador participante) es decir, especificar que realizó o realizó y 
+dirigió (indicando a quien(es) dirigió) la investigación según sea el caso. 
+De igual forma se deberá anexar fotocopia cotejada del Protocolo o Proyecto y 
+los reportes o publicaciones de los resultados o conclusiones de la 
+investigación (documento soporte). 
+En caso de tratarse de reporte de metas específicas alcanzadas dentro de un 
+proyecto de mediano o largo plazo, deberá anexar al reporte, la evaluación 
+correspondiente por parte del área académica respectiva y/o el organismo 
+externo que financia y en el oficio que firma el director del tecnológico, se 
+deberá especificar que se trata de un proyecto de mediano o largo plazo, según 
+sea el caso. 
+Se consideran las Investigaciones con una retroactividad máxima de 5 años 
+a la fecha de la promoción docente actual, siempre y cuando no hayan sido 
+consideradas en promociones anteriores. (En caso de que la categoría actual 
+haya requerido este mismo requisito y la investigación sea con fecha anterior a 
+su última promoción, necesita anexar constancia de la H. Comisión 
+Dictaminadora o del Director, indicando que no fue utilizada en su promoción 
+anterior). 
+También se consideran las Investigaciones elaboradas para tesis y las 
+realizadas en el año sabático. En el caso de las investigaciones elaboradas como 
+tema de tesis, sólo se le acredita al interesado la realización, ya que el director 
+o asesor de la tesis se le acredita la dirección de la misma o en el caso de que 
+el interesado participe como asesor de una tesis ya sea de Licenciatura, Maestría o Doctorado, un proyecto para concurso de Creatividad o Innovación 
+Tecnológica o Emprendedores, se le acredita la dirección de investigación, ya 
+que los alumnos son los autores intelectuales de dicho proyecto y son quienes 
+se consideran como realizadores del mismo; de tal forma que pueden 
+complementar ambas opciones, debiendo anexar los documentos soporte 
+correspondientes.  ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P15,RESPONSABLE_ELABORACION_PROGRAMAS,RESPONSABLE DE LA ELABORACIÓN DE PLANES Y PROGRAMAS DE ESTUDIO,"Se considera la revisión y/o elaboración de planes y programas de estudio de las carreras, tanto para programas de nivel Licenciatura o Posgrado, el profesor deberá participar o ser responsable directo de dicha elaboración y/o revisión de los mismos. Se presentará constancia sellada y firmada por el Director del centro de trabajo, o Subdirector Académico, o Jefe del Departamento Académico respectivo, indicando nombre y clave de los planes y programas de estudio, periodo de realización (inicio y término), tipo de participación y nivel de aplicación (superior o posgrado), anexando fotocopia cotejada de constancias o diplomas expedidos por el centro de trabajo adscrito al TecNM. (La actividad deberá ser con fecha posterior a la última promoción del docente).",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P16,DISEÑO_CONSTRUCCION_MATERIAL,DISEÑO Y CONSTRUCCIÓN DE MATERIAL Y EQUIPO DE ENSEÑANZA O INVESTIGACIÓN (TÉCNICOS DOCENTES),"Para el cumplimiento de este requisito deberán presentar constancia sellada y 
+firmada por la autoridad competente, donde se llevó a cabo la actividad, 
+indicando el nombre y tipo de material y equipo que se diseñó, nombre de la 
+asignatura donde se utiliza y periodo de participación (inicio y término). ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P17,SERVICIO_MANTENIMIENTO,"SERVICIOS DE MANTENIMIENTO, REPARACIÓN, AJUSTE Y CALIBRACIÓN DE INSTRUMENTAL Y EQUIPO DE ENSEÑANZA O INVESTIGACIÓN (TÉCNICOS DOCENTES)","Para su comprobación deberán presentar constancia sellada y firmada por la 
+autoridad competente, la cual deberá indicar el tipo de servicio prestado, 
+periodo de realización, a qué tipo de equipo e instrumental se refiere, nombre 
+de la asignatura en que se utiliza y lugar donde se llevó a cabo la actividad. ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P18,SOPORTE_TECNICO,ASESORÍAS Y ASISTENCIA TÉCNICA A TERCEROS A TRAVÉS DE LOS INSTITUTOS TECNOLÓGICOS (TÉCNICOS DOCENTES),"Deberán presentar constancia sellada y firmada por la Institución o Empresa 
+donde se prestó el servicio, indicando el tipo de asesoría y asistencia, período 
+de realización (inicio y término) y lugar donde se llevó a cabo la actividad. ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P19,EXPERIENCIA_JEFATURA,EXPERIENCIA COMO JEFE DE TALLER O (TÉCNICOS DOCENTES) TECNOLÓGICOS (TÉCNICOS DOCENTES),"Deberán presentar constancia y nombramiento del cargo ocupado, firmado y 
+sellado por la autoridad competente, indicando el nombre del cargo, periodo 
+de tiempo de inicio y término (dd/mm/aa) y lugar en donde se desempeñó el 
+cargo o la actividad que desempeña. ",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P20,RESPONSABLE_EQUIPO_ENSEÑANZA,RESPONSABLE DEL EQUIPO DE ENSEÑANZA O INVESTIGACIÓN (TÉCNICOS DOCENTES),"Para su comprobación deberán presentar constancia sellada y firmada por la 
+autoridad competente, indicando el nombre y tipo de instrumental y/o equipo 
+bajo su responsabilidad y periodo de tiempo de inicio y término.",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P21,CUROS_DOCENCIA_APROBADOS,CURSOS DE DOCENCIA APROBADOS (TÉCNICOS DOCENTES),"Se consideran los cursos aprobados por el personal docente, incluyendo la acreditación de estudios formales cursados por los profesores en instituciones con reconocimiento oficial, posteriores a la licenciatura (especialización, maestría y doctorado).
+
+Deberán presentar copia fotostática cotejada de diplomas, constancias o certificados parciales o totales expedidos por la institución que impartió el curso, indicando el nombre del curso, fecha de realización y período de duración. Sólo se consideran aquellos con una duración de 30 horas o más y con una retroactividad de tres años a la fecha de la promoción docente actual, siempre y cuando no hayan sido considerados en promociones anteriores. Por lo tanto, deberá anexar una constancia de la H. Comisión Dictaminadora o del Director, indicando que no se utilizó en su promoción anterior, cuando la categoría actual haya requerido este mismo requisito.",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P22,CONFERENCIAS_DICTADAS,CONFERENCIAS DICTADAS (TÉCNICOS DOCENTES),"Se consideran las exposiciones de temas o ponencias sobre aspectos técnicos, científicos o académicos en eventos académicos, simposios, mesas redondas, seminarios, congresos, convenciones, entre otros.
+
+Para cubrir este requisito deberá presentar diplomas o constancias expedidos por la institución donde se dictó la conferencia, indicando el nombre de la conferencia, lugar y período de la misma, así como el tipo de conferencia (nacional o internacional). La actividad deberá tener fecha posterior a la última promoción del docente.",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P23,CURSOS_ESPECIALES_IMPARTIDOS,CURSOS ESPECIALES IMPARTIDOS (TÉCNICOS DOCENTES),"Se consideran los cursos impartidos por el profesor como parte de las funciones académicas desarrolladas en el Subsistema y que no forman parte de los programas de las carreras o especialidades que se ofrecen en el plantel. Comprenden cursos de titulación, capacitación, actualización, cursos a la industria, cursos al personal del mismo Subsistema o de otro Subsistema incorporado al Modelo de Educación Media Superior y Superior, entre otros.
+
+Para cubrir este requisito deberá presentar diplomas o constancias expedidos por la institución donde se impartió el curso, indicando el nombre del curso, lugar y período del mismo, así como el tipo de curso (nacional o internacional). Se consideran únicamente los cursos con una duración mínima de 30 horas. La actividad deberá tener fecha posterior a la última promoción del docente.",ALTERNATIVA_UNO,,,,,,,,,,,,,,
+,P24,EXP_PROFESIONAL_CARGOS_RELACIONADOS,"EXPERIENCIA PROFESIONAL, HABIENDO DESEMPEÑADO LABORES O CARGOS 
+RELACIONADOS CON SU PROFESIÓN: (PROFESORES)","Se consideran las actividades o funciones en el desempeño de su profesión, distintas a las actividades docentes frente a grupo, pero que sean propias de ella. La experiencia docente se considera también como experiencia profesional en aquellos casos que, de acuerdo con su perfil profesional, sólo puedan desempeñar labores docentes.
+
+ACTIVIDADES RELACIONADAS CON SU PROFESIÓN  
+La experiencia profesional se considera a partir de haber concluido el Plan de Estudios correspondiente a Nivel Superior o Técnico de Nivel Medio Superior, tomando en cuenta la naturaleza y requisitos de la categoría. También se consideran las actividades organizacionales, de administración, planeación y coordinación, académicas, de investigación, extensión o vinculación relacionadas con el campo profesional respectivo, de acuerdo con el cuadro de “Actividades Realizadas en los Institutos Tecnológicos consideradas como Experiencia Profesional” anexo en la página 68 de este documento.
+
+Para acreditar la experiencia profesional deberán enviar:
+
+Copia fotostática cotejada de la carta de pasante o certificado de estudios, donde conste que concluyó todos los créditos de la carrera. La experiencia profesional se considera a partir de la fecha que señalan los documentos antes mencionados. (Estos documentos sólo se enviarán cuando la experiencia profesional no sea cubierta con el período que comprende entre la fecha de titulación y la fecha de promoción).
+
+Constancia expedida por la empresa y/o institución (en papel membretado y con firma y sello del funcionario o ejecutivo autorizado) indicando el cargo o puesto, actividad o función donde se realizaron o realizan dichas actividades, así como el tipo de relación laboral (asalariado o prestador de servicios profesionales honorarios). En caso de no contar con dicha constancia, se podrá comprobar con horarios de labores, alta o baja del Seguro Social, aportaciones al SAT, etc. (cuando se trate de constancias expedidas por empresas que no cuenten con sello, el membrete deberá especificar el RFC y datos de la empresa). La experiencia profesional se considera en número de años laborados, por lo que es necesario especificar fecha de inicio y término (dd/mm/aa), y las actividades deben ser acordes a su perfil profesional.
+
+Cuando el interesado ejerza libremente su profesión (prestador de servicios profesionales honorarios), deberá comprobar con declaraciones de impuestos ante la SHCP, año por año, dependiendo del número de años que se quiera comprobar. (Cuando se presentan declaraciones de impuestos reportando cero ingresos, no se consideran para contabilizar experiencia profesional, ya que no ejerció en ese periodo; sólo se presenta como requisito fiscal. Pero en el caso de haber ejercido su profesión en ese año y, por cuestión de ajustes en su reporte, finalmente quede en cero su declaración, en este caso sí se considera como experiencia profesional).
+
+En caso de tratarse de actividades dentro del Sistema Nacional de Institutos Tecnológicos, la constancia deberá ser expedida por el Director del Centro de Trabajo indicando periodos de inicio y término (dd/mm/aa) y deberán anexar los comprobantes y/o los nombramientos correspondientes a la actividad desarrollada.
+
+Para acreditar la experiencia profesional de la página 68 de este documento, en el punto No. 20 del anexo “ACTIVIDADES REALIZADAS EN LOS INSTITUTOS TECNOLÓGICOS CONSIDERADAS COMO EXPERIENCIA PROFESIONAL”, “Participación en la dirección y administración de sistemas educativos”, esta experiencia se considera sólo a partir de Jefe de Oficina y/o Coordinadores (de acuerdo al Manual de Organización del Instituto Tecnológico). No necesariamente deberá ser acorde al perfil; para comprobación se deberán anexar constancias expedidas por el Director, indicando periodo (dd/mm/aa) y actividad realizada, anexando los nombramientos respectivos que soporten dicha constancia. Cuando se trate de puestos inferiores a Jefe de Departamento, los comprobantes pueden ser nombramientos o constancias firmadas por el Director del centro de trabajo. Cuando se trate de nombramientos de Jefes de Departamento, deberán estar firmados por el Director General, y cuando se trate de Subdirectores y Directores, los nombramientos deberán estar firmados por el Subsecretario del Ramo.
+
+NOTA: Para acreditar la experiencia profesional se considera el período de tiempo comprobado, por lo que éste no debe traslaparse en diferentes actividades. Para comprobar la experiencia profesional en los casos de las categorías de Profesor Investigador y de Técnico Docente, se atenderán las mismas recomendaciones, tomando en cuenta la naturaleza y requisitos de la categoría.",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P25,EXP_INVESTIGACION_CIENT_TECNOLOGICA,"EXPERIENCIA EN INVESTIGACIÓN CIENTÍFICA Y TECNOLÓGICA (PROFESORES 
+INVESTIGADORES)","Se considera específicamente la experiencia adquirida en Investigación 
+Científica y Tecnológica. Deberán presentar constancia donde indique el 
+nombre de la empresa o institución donde se realizó la investigación, periodo 
+de realización inicio y término (dd/mm/aa) y nombre de la(s) investigación(es), 
+de igual forma, se deberá anexar fotocopia cotejada de la documentación 
+soporte. ",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P26,EXP_PROFESIONAL_TALLERES_LABS,EXPERIENCIA PROFESIONAL EN LAS ÁREAS QUE SE ATIENDEN EN LOS TALLERES Y LABORATORIOS (TÉCNICOS - DOCENTES),"Deberá ser específicamente en las áreas que se atienden en los Talleres y 
+Laboratorios de los Institutos Tecnológicos. Se presentará constancia 
+indicando nombre de la empresa o institución, periodo inicio y término 
+(dd/mm/aa), tipo de actividad realizada y nombre del taller o laboratorio. ",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P27,EXP_PROFESIONAL_PRODUCCION_DIDACTICA,"EXPERIENCIA PROFESIONAL EN INSTITUCIONES O EMPRESAS PRODUCTORAS DE 
+MATERIAL Y EQUIPO DIDÁCTICO, TÉCNICO O CIENTÍFICO (TÉCNICOS - DOCENTES)","Se considera la adquirida específicamente en Instituciones o Empresas 
+productoras de Material y Equipo Didáctico, Técnico o Científico. 
+En los tres casos se deberá anexar constancias expedidas por la empresa o 
+institución donde se realizó la actividad, especificando período de realización 
+inicio y termino (dd/mm/aa) y el tipo de actividad.",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P28,EXP_DOCENTE,EXPERIENCIA DOCENTE,"Se considera el tiempo de labores impartiendo cátedra orientada a la formación de profesionales e investigadores de nivel medio superior, superior y posgrado; inclusive la capacitación, actualización y especialización en áreas técnicas y profesionales al personal del sistema, empresas o cualquier institución educativa a nivel medio superior, superior o posgrado, de acuerdo con los requisitos reglamentarios de cada categoría.
+
+Para acreditar la experiencia docente deberán enviar constancia expedida por el Director de la institución, que certifique haber impartido cátedra, indicando materias, períodos (semestral) y nivel educativo y/o capacitación, actualización y especialización en áreas técnicas y profesionales. También podrán comprobar la experiencia docente con los horarios institucionales debidamente requisitados y firmados.",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P29,CURSOS_DOCENCIA_APROBADOS,CURSOS DE DOCENCIA APROBADOS,"Se consideran los cursos aprobados por el personal docente, incluyendo la acreditación de estudios formales cursados por los profesores en instituciones con reconocimiento oficial, posteriores a la licenciatura (especialización, maestría y doctorado).
+
+Para su comprobación, se deberá presentar copia fotostática cotejada de diplomas, constancias o certificados parciales o totales expedidos por la institución que impartió el curso, indicando nombre del curso, fecha de realización y período de duración. Sólo se consideran aquellos con una duración mínima de 30 horas y con una retroactividad de tres años a la fecha de la promoción docente actual, siempre y cuando no hayan sido considerados en promociones anteriores. Es necesario anexar constancias de la H. Comisión Dictaminadora o del Director indicando que no se utilizaron en su promoción anterior, cuando la categoría actual requiere este mismo requisito.",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P30,CONFERENCIAS_DICTADAS,CONFERENCIAS DICTADAS,"Se consideran las exposiciones de temas o ponencias en simposio, mesas 
+redondas, seminarios, congresos, convenciones, etc. 
+Para cubrir este requisito deberá presentar diplomas o constancias expedidos 
+por la Institución donde se dictó la conferencia indicando el nombre de la 
+conferencia, lugar y período de la misma, así como el tipo de conferencia 
+(nacional o internacional). (La actividad deberá ser con fecha posterior a la 
+última promoción del docente). ",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P31,CURSOS_ESPECIALES_IMPARTIDOS,CURSOS ESPECIALES IMPARTIDOS,"Se consideran los cursos impartidos por el profesor como parte de las funciones académicas desarrolladas en el Subsistema y que no forman parte de los programas de estudio de las carreras o especialidades que se ofrecen en el plantel. Comprenden cursos de titulación, capacitación, actualización, cursos a la industria, cursos al personal del Subsistema o de otro Subsistema incorporado al Modelo de Educación Media Superior y Superior, entre otros.
+
+Para cubrir este requisito deberá presentar diplomas o constancias expedidos por la institución donde se impartió el curso, indicando el nombre del curso, lugar y período del mismo, así como el tipo de curso (nacional o internacional). Se consideran únicamente los cursos con una duración mínima de 30 horas. La actividad deberá tener fecha posterior a la última promoción del docente.",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P32,INVESTIGACIONES_REALIZADAS_DIRIGIDAS,INVESTIGACIONES REALIZADAS Y DIRIGIDAS,"Se consideran las actividades que el personal académico realiza en programas de investigación científica, tecnológica o educativa de la institución o de un organismo externo. Se consideran proyectos concluidos o bien metas específicas alcanzadas dentro de un proyecto de mediano o largo plazo.
+
+Para acreditar este requisito deberán presentar constancia expedida por el Director del centro de trabajo, indicando nombre del investigador, nombre de la investigación, periodo de realización (inicio y término) y especificar que realizó y dirigió (indicando a quién(es) dirigió) la investigación. De igual forma, se deberá anexar fotocopia cotejada del protocolo o proyecto y los reportes o publicaciones con resultados o conclusiones de la investigación (documento completo).
+
+En caso de tratarse de reporte de metas específicas alcanzadas dentro de un proyecto de mediano o largo plazo, deberá anexarse al reporte la evaluación correspondiente por parte del área académica respectiva y/o el organismo externo que financia. Si la categoría actual ha requerido este mismo requisito y la investigación es con fecha anterior a su última promoción, será necesario anexar constancia de la H. Comisión Dictaminadora o del Director indicando que no fue utilizada en su promoción anterior.
+
+Se consideran las investigaciones con una retroactividad de cinco años a la fecha de la promoción docente actual, siempre y cuando no hayan sido consideradas en promociones anteriores. También se consideran las investigaciones elaboradas para tesis y las realizadas en el año sabático.
+
+En el caso de las investigaciones elaboradas por el interesado como tema de tesis, sólo se le acredita la realización, ya que al director o asesor de la tesis se le acredita la dirección de la misma. En el caso de que el interesado participe como asesor o director de una tesis —ya sea de licenciatura, maestría o doctorado—, o en un proyecto para concurso de creatividad, innovación tecnológica o emprendedores, se le acredita dirección de investigación, ya que los alumnos son los autores intelectuales de dicho proyecto y son quienes se consideran como realizadores del mismo.
+
+De esta forma, se pueden complementar ambas opciones, debiendo anexar los documentos soporte correspondientes.",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P33,PARTICIPACION_COMISIONES_ASOCIACIONES,"COMISIONES Y ASOCIACIONES EDUCATIVAS NACIONALES O INTERNACIONALES 
+DE LAS QUE HA FORMADO PARTE.","Se considera la participación y colaboración activa en áreas, actividades o comisiones especiales con fines educativos, en un tiempo determinado, así como ser o haber sido miembro de una asociación educativa nacional o internacional.
+
+Para acreditar este requisito deberán presentar constancia sellada y firmada por el Director del centro de trabajo o, en su caso, por el organismo donde desempeñó la comisión, especificando el cargo o actividad desarrollada y el tipo de comisión (nacional o internacional). Además, deberá anexar fotocopia cotejada de la membresía de la asociación o comprobante que indique que ha formado o forma parte de dicha asociación.",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P34,DIRECCION_SISTEMAS_EDUCATIVOS,"PARTICIPACIÓN EN DIRECCIÓN DE SISTEMAS EDUCACIONALES O PARTICIPACIÓN 
+EN DIRECCIÓN Y ORGANIZACIÓN DE SISTEMAS EDUCATIVOS.","Se considera la realización de actividades que comprenden la dirección y administración, lo cual implica planear, dirigir, organizar, controlar y evaluar los momentos de gestión educativa.
+
+Se toma en cuenta a partir del cargo de jefe de departamento y/o miembro del Sistema Nacional de Investigadores (SNI). Para su comprobación se deberá presentar constancia del organismo o institución donde conste su participación, sellada y firmada por la autoridad competente, indicando nombre del cargo, nivel educativo y descripción de las actividades. Asimismo, deberá anexarse fotocopia cotejada del nombramiento correspondiente. El tiempo acreditable para jefe de departamento será de un año y, para el miembro del SNI, lo que indique el nombramiento vigente.",ALTERNATIVA_DOS,,,,,,,,,,,,,,
+,P35,IMPARTIDO_CATEDRA,Haber impartido cátedra,,ALTERNATIVA_UNO,,,,,,,,,,,,,,
