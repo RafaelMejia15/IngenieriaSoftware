@@ -35,7 +35,7 @@ export default function ResetPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-zinc-950"
+      className="flex-1 bg-white"
       behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined}
       enabled={Platform.OS !== 'web'}
     >
@@ -43,10 +43,10 @@ export default function ResetPasswordScreen() {
 
         {/* Encabezado */}
         <View className="mb-10">
-          <Text className="text-3xl font-bold text-white tracking-tight">
+          <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
             Nueva contraseña
           </Text>
-          <Text className="text-sm text-zinc-400 mt-1">
+          <Text className="text-sm text-zinc-500 mt-1">
             Ingresa tu nueva contraseña para continuar
           </Text>
         </View>
@@ -81,7 +81,7 @@ export default function ResetPasswordScreen() {
 
         {errorMessage && (
           <View className="mt-2">
-            <Text className="text-red-400 text-md text-center">{errorMessage}</Text>
+            <Text className="text-red-500 text-md text-center">{errorMessage}</Text>
           </View>
         )}
 
