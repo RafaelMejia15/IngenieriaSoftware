@@ -50,7 +50,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         max_age=JWT_EXPIRE_MINUTES * 60,
         httponly=True,
         secure=_secure,
-        samesite=_samesite,
+        samesite="none",
         path="/",
     )
     return response
