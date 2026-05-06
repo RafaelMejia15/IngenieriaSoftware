@@ -3,11 +3,58 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, false, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+
+class Rol(Base):
+    """Sincronizado con tabla `rol` creada en SQL (auth). Solo para FK / metadatos ORM."""
+
+    __tablename__ = "rol"
+
+    id_rol: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    nombre: Mapped[str] = mapped_column(String(255), nullable=False)
+    descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class Usuario(Base):
+    """Sincronizado con tabla `usuario` (auth). Necesario para FK desde `convocatoria`."""
+
+    __tablename__ = "usuario"
+
+    id_usuario: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    id_rol: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("rol.id_rol"), nullable=False
+    )
+    correo: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    esta_activo: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=false()
+    )
+    fecha_registro: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=False),
+        nullable=True,
+        server_default=func.now(),
+    )
+    token_verificacion: Mapped[str | None] = mapped_column(
+        String(64), nullable=True
+    )
+    token_verificacion_expira: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    token_recuperacion: Mapped[str | None] = mapped_column(
+        String(64), nullable=True
+    )
+    token_recuperacion_expira: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
 
 class CatalogoRequisito(Base):
