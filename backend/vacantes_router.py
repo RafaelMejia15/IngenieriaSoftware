@@ -82,6 +82,33 @@ def crear_convocatoria(
     return _convocatoria_to_response(db, conv.id_convocatoria)
 
 
+@router.get("/admin/convocatorias", response_model=ConvocatoriaListResponse)
+def listar_convocatorias_admin(
+    db: Session = Depends(get_db),
+    _admin=Depends(require_admin),
+    q: str | None = Query(
+        None,
+        description="Filtra por nombre (ILIKE)",
+    ),
+    solo_activas: bool = Query(
+        False,
+        description="Si es true, aplica la misma regla que el buscador de aspirantes (vigentes ahora en UTC).",
+    ),
+):
+    stmt = select(Convocatoria).options(
+        selectinload(Convocatoria.requisitos_vinculo).selectinload(
+            ConvocatoriaRequisito.requisito
+        ),
+    )
+    if solo_activas:
+        stmt = stmt.where(_active_filters())
+    if q and q.strip():
+        stmt = stmt.where(Convocatoria.nombre.ilike(f"%{q.strip()}%"))
+    stmt = stmt.order_by(Convocatoria.fecha_inicio.desc())
+    rows = db.scalars(stmt).all()
+    return ConvocatoriaListResponse(items=[_convocatoria_from_model(c) for c in rows])
+
+
 def _active_filters():
     now = datetime.now(timezone.utc)
     return and_(
@@ -91,7 +118,18 @@ def _active_filters():
     )
 
 
-@router.get("/aspirante/convocatorias", response_model=ConvocatoriaListResponse)
+@router.get(
+    "/aspirante/convocatorias",
+    response_model=ConvocatoriaListResponse,
+    summary="Buscador aspirante (solo convocatorias vigentes)",
+    description=(
+        "Solo rol **usuario** (aspirante). Solo devuelve convocatorias con estado "
+        "**ABIERTA** y cuya vigencia incluye el instante actual en **UTC** "
+        "(fecha_inicio ≤ ahora ≤ fecha_fin). Si creaste plazas con "
+        "fecha_inicio en el futuro o fecha_fin ya pasada, aquí no aparecen. "
+        "Los administradores deben usar **GET /admin/convocatorias**."
+    ),
+)
 def buscar_convocatorias_activas(
     db: Session = Depends(get_db),
     _user=Depends(require_usuario_aspirante),

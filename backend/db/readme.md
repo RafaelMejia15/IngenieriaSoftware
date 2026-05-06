@@ -10,6 +10,8 @@ Tras **Sprint 3**, el endpoint `POST /login` devuelve `access_token` y `token_ty
 
 Variables de entorno: `JWT_SECRET`, `JWT_ALGORITHM` (por defecto `HS256`), `JWT_EXPIRE_MINUTES`.
 
+- `GET /admin/convocatorias`: listado de todas las convocatorias (administrador); query `solo_activas=true` replica el filtro del aspirante.
+
 ## Vacante activa (Sprint 3, regla operativa)
 
 Una convocatoria se considera **activa** para el buscador de aspirantes cuando:
