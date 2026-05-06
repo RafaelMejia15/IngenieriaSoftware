@@ -49,7 +49,7 @@ export default function RegisterScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-zinc-950"
+      className="flex-1 bg-white"
       behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined}
       enabled={Platform.OS !== 'web'}
     >
@@ -57,10 +57,10 @@ export default function RegisterScreen() {
 
         {/* Encabezado */}
         <View className="mb-10">
-          <Text className="text-3xl font-bold text-white tracking-tight">
+          <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
             Crear cuenta
           </Text>
-          <Text className="text-sm text-zinc-400 mt-1">
+          <Text className="text-sm text-zinc-500 mt-1">
             Regístrate para continuar
           </Text>
         </View>
@@ -113,23 +113,22 @@ export default function RegisterScreen() {
         </Formik>
 
         {successMessage && (
-          <View className="mt-4 bg-zinc-900 border border-zinc-700 rounded-xl p-4">
-            <Text className="text-white text-sm text-center">{successMessage}</Text>
+          <View className="mt-4 bg-zinc-100 border border-zinc-200 rounded-xl p-4">
+            <Text className="text-zinc-900 text-sm text-center">{successMessage}</Text>
           </View>
         )}
 
         {errorMessage && (
           <View className="mt-2">
-            <Text className="text-red-400 text-md text-center">{errorMessage}</Text>
+            <Text className="text-red-500 text-md text-center">{errorMessage}</Text>
           </View>
         )}
 
-
         {/* Link al Login */}
         <Pressable onPress={() => router.replace('/')} className="mt-6 items-center">
-          <Text className="text-zinc-500 text-sm">
+          <Text className="text-zinc-400 text-sm">
             ¿Ya tienes cuenta?{' '}
-            <Text className="text-white font-semibold">Iniciar sesión</Text>
+            <Text className="text-zinc-900 font-semibold">Iniciar sesión</Text>
           </Text>
         </Pressable>
 

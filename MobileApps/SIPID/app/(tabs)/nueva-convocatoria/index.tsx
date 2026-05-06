@@ -51,7 +51,7 @@ function RequisitoSelector({
 }) {
   return (
     <View className="gap-1">
-      <Text className="text-zinc-400 text-sm font-medium mb-1">Requisitos obligatorios</Text>
+      <Text className="text-zinc-500 text-sm font-medium mb-1">Requisitos obligatorios</Text>
       {requisitos.map((req) => {
         const isSelected = selected.includes(req.id);
         return (
@@ -59,28 +59,28 @@ function RequisitoSelector({
             key={req.id}
             onPress={() => onToggle(req.id)}
             className={`flex-row items-center p-4 rounded-xl border mb-2 ${
-              isSelected ? 'bg-white border-white' : 'bg-zinc-900 border-zinc-800'
+              isSelected ? 'bg-zinc-900 border-zinc-900' : 'bg-zinc-50 border-zinc-200'
             }`}
           >
             <View
               className={`w-5 h-5 rounded border mr-3 items-center justify-center ${
-                isSelected ? 'bg-zinc-950 border-zinc-950' : 'border-zinc-600'
+                isSelected ? 'bg-white border-white' : 'border-zinc-300'
               }`}
             >
-              {isSelected && <Text className="text-white text-xs font-bold">✓</Text>}
+              {isSelected && <Text className="text-zinc-900 text-xs font-bold">✓</Text>}
             </View>
             <View className="flex-1">
-              <Text className={`font-semibold text-sm ${isSelected ? 'text-zinc-950' : 'text-white'}`}>
+              <Text className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-zinc-900'}`}>
                 {req.codigo}
               </Text>
-              <Text className={`text-xs mt-0.5 ${isSelected ? 'text-zinc-700' : 'text-zinc-400'}`}>
+              <Text className={`text-xs mt-0.5 ${isSelected ? 'text-zinc-300' : 'text-zinc-500'}`}>
                 {req.nombre}
               </Text>
             </View>
           </Pressable>
         );
       })}
-      {error && <Text className="text-red-400 text-xs mt-1">{error}</Text>}
+      {error && <Text className="text-red-500 text-xs mt-1">{error}</Text>}
     </View>
   );
 }
@@ -109,20 +109,20 @@ function DatePickerField({
 
   return (
     <View className="gap-1">
-      <Text className="text-zinc-400 text-sm font-medium mb-1">{label}</Text>
+      <Text className="text-zinc-500 text-sm font-medium mb-1">{label}</Text>
       <Pressable
         onPress={() => setShow(true)}
-        className={`border rounded-xl px-4 py-4 bg-zinc-900 ${
-          error ? 'border-red-500' : 'border-zinc-800'
+        className={`border rounded-xl px-4 py-4 bg-zinc-50 ${
+          error ? 'border-red-500' : 'border-zinc-200'
         }`}
       >
-        <Text className={value ? 'text-white text-base' : 'text-zinc-600 text-base'}>
+        <Text className={value ? 'text-zinc-900 text-base' : 'text-zinc-400 text-base'}>
           {value ? new Date(value).toLocaleDateString('es-MX', {
             day: '2-digit', month: 'long', year: 'numeric',
           }) : 'Seleccionar fecha'}
         </Text>
       </Pressable>
-      {error && <Text className="text-red-400 text-xs mt-1">{error}</Text>}
+      {error && <Text className="text-red-500 text-xs mt-1">{error}</Text>}
       {show && (
         <DateTimePicker
           value={date}
@@ -160,7 +160,7 @@ export default function NuevaConvocatoriaScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -169,18 +169,18 @@ export default function NuevaConvocatoriaScreen() {
 
           {/* Encabezado */}
           <View className="mb-8">
-            <Text className="text-3xl font-bold text-white tracking-tight">
+            <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
               Nueva Convocatoria
             </Text>
-            <Text className="text-sm text-zinc-400 mt-1">
+            <Text className="text-sm text-zinc-500 mt-1">
               Completa los datos para publicar una vacante
             </Text>
           </View>
 
           {loadingCatalogo ? (
             <View className="flex-1 justify-center items-center py-20">
-              <ActivityIndicator color="#ffffff" />
-              <Text className="text-zinc-500 text-sm mt-4">Cargando catálogo...</Text>
+              <ActivityIndicator color="#18181b" />
+              <Text className="text-zinc-400 text-sm mt-4">Cargando catálogo...</Text>
             </View>
           ) : (
             <Formik
@@ -235,13 +235,13 @@ export default function NuevaConvocatoriaScreen() {
                   />
 
                   {successMessage && (
-                    <View className="bg-zinc-900 border border-zinc-700 rounded-xl p-4">
-                      <Text className="text-white text-sm text-center">{successMessage}</Text>
+                    <View className="bg-zinc-100 border border-zinc-200 rounded-xl p-4">
+                      <Text className="text-zinc-900 text-sm text-center">{successMessage}</Text>
                     </View>
                   )}
 
                   {errorMessage && (
-                    <Text className="text-red-400 text-sm text-center">{errorMessage}</Text>
+                    <Text className="text-red-500 text-sm text-center">{errorMessage}</Text>
                   )}
 
                   <View className="mb-8">

@@ -20,15 +20,15 @@ export const useLoginMutation = () => {
     },
     onSuccess: (response) => {
       console.log("[LOGIN] response →", response);
-      const tempToken = "temp_mock_token_123";
+      const token = response.access_token;
       const user: User = {
-        username: response.rol,
-        nombre: response.msg,
+        username: response.rol || "usuario",
+        nombre: response.msg || "",
         email: "",
         apellidoPaterno: "",
         apellidoMaterno: "",
       };
-      setAuth(tempToken, user);
+      setAuth(token, user);
     },
     onError: (error) => {
       console.error("[LOGIN] error →", error);

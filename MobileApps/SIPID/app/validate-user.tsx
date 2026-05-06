@@ -32,22 +32,22 @@ export default function ValidateUserScreen() {
   }, []);
 
   return (
-    <View className="flex-1 bg-zinc-950 justify-center items-center p-8">
+    <View className="flex-1 bg-white justify-center items-center p-8">
       {status === 'loading' && (
         <View className="items-center gap-4">
-          <ActivityIndicator color="#ffffff" size="large" />
-          <Text className="text-zinc-400 text-sm mt-4">Verificando tu cuenta...</Text>
+          <ActivityIndicator color="#18181b" size="large" />
+          <Text className="text-zinc-500 text-sm mt-4">Verificando tu cuenta...</Text>
         </View>
       )}
 
       {status === 'success' && (
         <View className="items-center gap-6 w-full">
-          <View className="bg-zinc-900 border border-zinc-700 rounded-3xl p-8 w-full items-center">
+          <View className="bg-zinc-100 border border-zinc-200 rounded-3xl p-8 w-full items-center">
             <Text className="text-4xl mb-4">✅</Text>
-            <Text className="text-white text-xl font-bold text-center mb-2">
+            <Text className="text-zinc-900 text-xl font-bold text-center mb-2">
               ¡Cuenta activada!
             </Text>
-            <Text className="text-zinc-400 text-sm text-center">{message}</Text>
+            <Text className="text-zinc-500 text-sm text-center">{message}</Text>
           </View>
           <View className="w-full">
             <Button
@@ -60,12 +60,12 @@ export default function ValidateUserScreen() {
 
       {status === 'error' && (
         <View className="items-center gap-6 w-full">
-          <View className="bg-zinc-900 border border-red-900 rounded-3xl p-8 w-full items-center">
+          <View className="bg-red-50 border border-red-200 rounded-3xl p-8 w-full items-center">
             <Text className="text-4xl mb-4">❌</Text>
-            <Text className="text-white text-xl font-bold text-center mb-2">
+            <Text className="text-zinc-900 text-xl font-bold text-center mb-2">
               Enlace inválido
             </Text>
-            <Text className="text-zinc-400 text-sm text-center">{message}</Text>
+            <Text className="text-zinc-500 text-sm text-center">{message}</Text>
           </View>
           <View className="w-full">
             <Button

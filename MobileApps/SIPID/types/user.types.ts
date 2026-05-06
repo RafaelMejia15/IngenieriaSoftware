@@ -10,7 +10,13 @@ export type UserRole = 'usuario' | 'admin';
 
 export interface AuthResponse {
   msg: string;
-  rol: string;
+  rol?: string;
+  cuenta_activa?: boolean;
+}
+
+export interface AuthLoginResponse extends AuthResponse {
+  access_token: string;
+  token_type: string;
 }
 
 export interface RegisterPayload {

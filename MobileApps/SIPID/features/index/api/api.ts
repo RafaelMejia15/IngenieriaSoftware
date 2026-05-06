@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/api";
 import {
   AuthResponse,
+  AuthLoginResponse,
   ForgotPasswordPayload,
   RegisterPayload,
   ResetPasswordPayload,
@@ -9,7 +10,7 @@ import {
 export const login = async (
   email: string,
   password: string,
-): Promise<AuthResponse> => {
+): Promise<AuthLoginResponse> => {
   const response = await apiClient.post("/login", { email, password });
   return response.data;
 };

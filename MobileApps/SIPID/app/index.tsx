@@ -8,8 +8,6 @@ import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-nat
 import * as Yup from 'yup';
 
 
-// Esquema de validación con Yup
-// Yup es como "zod" pero más compatible con Formik
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
     .email('Ingresa un correo válido')
@@ -20,9 +18,7 @@ const LoginSchema = Yup.object().shape({
 });
 
 export default function LoginScreen() {
-  // useRouter es el equivalente de useNavigate() en react-router-dom
   const router = useRouter();
-
   const { mutateAsync: loginAction, isPending } = useLoginMutation();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -37,10 +33,8 @@ export default function LoginScreen() {
   }
 
   return (
-    // KeyboardAvoidingView sube el contenido cuando el teclado virtual aparece,
-    // equivalente a nada en web (el browser lo maneja solo), pero en móvil es esencial
     <KeyboardAvoidingView
-      className="flex-1 bg-zinc-950"
+      className="flex-1 bg-white"
       behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined}
       enabled={Platform.OS !== 'web'}
     >
@@ -48,21 +42,14 @@ export default function LoginScreen() {
 
         {/* Encabezado */}
         <View className="mb-10">
-          <Text className="text-3xl font-bold text-white tracking-tight">
+          <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
             Bienvenido
           </Text>
-          <Text className="text-sm text-zinc-400 mt-1">
+          <Text className="text-sm text-zinc-500 mt-1">
             Inicia sesión para continuar
           </Text>
         </View>
 
-        {/*
-          Formik funciona igual que en React Web:
-          - initialValues: valores iniciales del formulario
-          - validationSchema: reglas de validación (Yup)
-          - onSubmit: función que se llama cuando el formulario es válido
-          - values, errors, touched, handleChange, handleSubmit: mismos conceptos que en web
-        */}
         <Formik
           initialValues={{ email: '', password: '' }}
           validationSchema={LoginSchema}
@@ -103,23 +90,23 @@ export default function LoginScreen() {
         </Formik>
         {errorMessage && (
           <View className="mt-2">
-            <Text className="text-red-400 text-md text-center">{errorMessage}</Text>
+            <Text className="text-red-500 text-md text-center">{errorMessage}</Text>
           </View>
         )}
 
         {/* Links de navegación */}
         <View className="mt-6 gap-3 items-center">
           <Pressable onPress={() => router.push('/forgot-password')}>
-            <Text className="text-zinc-500 text-sm">
+            <Text className="text-zinc-400 text-sm">
               ¿Olvidaste tu contraseña?{' '}
-              <Text className="text-white font-semibold">Recupérala aquí</Text>
+              <Text className="text-zinc-900 font-semibold">Recupérala aquí</Text>
             </Text>
           </Pressable>
 
           <Pressable onPress={() => router.push('/register')}>
-            <Text className="text-zinc-500 text-sm">
+            <Text className="text-zinc-400 text-sm">
               ¿No tienes cuenta?{' '}
-              <Text className="text-white font-semibold">Regístrate</Text>
+              <Text className="text-zinc-900 font-semibold">Regístrate</Text>
             </Text>
           </Pressable>
         </View>
@@ -128,4 +115,3 @@ export default function LoginScreen() {
     </KeyboardAvoidingView>
   );
 }
-
