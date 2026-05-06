@@ -1,7 +1,5 @@
 import axios from "axios";
-
-// 1. Validar que la URL exista (si no, axios lanzará errores crípticos)
-//const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import { useAuthStore } from "@/stores/useAuthStore";
 
 // const API_URL = "http://localhost:8080";
 const API_URL = "https://uwu.dantech.com.mx";
@@ -14,10 +12,18 @@ if (!API_URL) {
 
 export const apiClient = axios.create({
   baseURL: API_URL,
-  timeout: 10000, // 2. IMPORTANTE: Agrega un timeout (10s).
-  // Sin esto, si la red falla, la petición puede quedarse "colgada" para siempre.
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+});
+
+// Interceptor: inyecta el Bearer token en cada request automáticamente
+apiClient.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
