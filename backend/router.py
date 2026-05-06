@@ -1,6 +1,8 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
+import os
+
 from auth_classes import AuthService
 from database import get_db
 from email_service import (
@@ -15,7 +17,7 @@ from schemas import (
     RegisterRequest,
     ResetPasswordRequest,
 )
-from security import create_access_token
+from security import JWT_EXPIRE_MINUTES, create_access_token
 
 router = APIRouter()
 
@@ -30,7 +32,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         id_usuario=user_data.id_usuario,
         rol=user_data.nombre_rol,
     )
-    return JSONResponse(
+    response = JSONResponse(
         content={
             "msg": "OK",
             "rol": user_data.nombre_rol,
@@ -38,6 +40,20 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
             "token_type": "bearer",
         }
     )
+    _secure = os.getenv("COOKIE_SECURE", "").lower() in ("1", "true", "yes")
+    _samesite = os.getenv("COOKIE_SAMESITE", "lax").strip().lower()
+    if _samesite not in ("lax", "strict", "none"):
+        _samesite = "lax"
+    response.set_cookie(
+        key="access_token",
+        value=access,
+        max_age=JWT_EXPIRE_MINUTES * 60,
+        httponly=True,
+        secure=_secure,
+        samesite=_samesite,
+        path="/",
+    )
+    return response
 
 
 @router.post("/register")
