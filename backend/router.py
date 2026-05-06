@@ -21,7 +21,14 @@ from security import create_access_token
 
 router = APIRouter()
 
-@router.post("/login")
+@router.post(
+    "/login",
+    description=(
+        "La cookie `access_token` queda registrada para el **dominio/host del API** "
+        "(el de la URL del login en Network), no para el dominio del front. "
+        "En DevTools, revísala bajo ese host del API (no solo bajo CloudFront)."
+    ),
+)
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
     auth_service = AuthService(db)
     user_data = auth_service.authenticate_user(

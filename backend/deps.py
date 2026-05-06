@@ -14,6 +14,20 @@ from security import decode_access_token
 http_bearer = HTTPBearer(auto_error=False)
 
 
+def _rol_key(rol: str) -> str:
+    """Normaliza nombres de rol en BD / JWT (ej. admin ↔ Administrador)."""
+    r = (rol or "").strip().lower()
+    if r in ("admin", "administrador"):
+        return "admin"
+    if r in ("usuario", "aspirante") or r.startswith("usuario "):
+        return "usuario"
+    return r
+
+
+def _roles_equivalent(rol_bd: str, rol_token: str) -> bool:
+    return _rol_key(rol_bd) == _rol_key(rol_token)
+
+
 class CurrentUser:
     __slots__ = ("email", "id_usuario", "nombre_rol")
 
@@ -79,17 +93,17 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Cuenta no activa",
         )
-    if row.nombre_rol != rol:
+    if not _roles_equivalent(row.nombre_rol, rol):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inconsistente con el usuario",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return CurrentUser(email=email, id_usuario=uid, nombre_rol=rol)
+    return CurrentUser(email=email, id_usuario=uid, nombre_rol=row.nombre_rol)
 
 
 def require_admin(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
-    if user.nombre_rol != "admin":
+    if _rol_key(user.nombre_rol) != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Se requiere rol administrador",
@@ -98,7 +112,7 @@ def require_admin(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
 
 
 def require_usuario_aspirante(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
-    if user.nombre_rol != "usuario":
+    if _rol_key(user.nombre_rol) != "usuario":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Se requiere rol de aspirante (usuario)",
@@ -107,7 +121,7 @@ def require_usuario_aspirante(user: CurrentUser = Depends(get_current_user)) -> 
 
 
 def require_catalogo_reader(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
-    if user.nombre_rol not in ("admin", "usuario"):
+    if _rol_key(user.nombre_rol) not in ("admin", "usuario"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="No autorizado para consultar el catálogo",

@@ -63,7 +63,10 @@ def build_cors_config() -> dict:
 
 def set_auth_access_cookie(response: Response, access_token: str) -> None:
     """
-    Fija la cookie HttpOnly del JWT. Por defecto orientado a cross-site (front ≠ API).
+    Fija la cookie HttpOnly del JWT en el dominio del **servidor que emite esta
+    respuesta** (tu API/nginx). Una SPA en otro dominio no verá la cookie bajo
+    su origen en DevTools; el navegador la enviará en peticiones al API si
+    SameSite=None, Secure y CORS con credenciales están bien configurados.
     """
     cross_site = os.getenv("COOKIE_CROSS_SITE", "true").lower() in (
         "1",
