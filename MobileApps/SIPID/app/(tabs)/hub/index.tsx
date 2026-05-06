@@ -46,7 +46,7 @@ export default function HubIndex() {
 
                     {/* Todos los usuarios pueden ver convocatorias */}
                     <Pressable
-                        onPress={() => router.push('/(tabs)/convocatorias')}
+                        onPress={() => router.push('/(tabs)/convocatorias' as any)}
                         className="bg-zinc-50 border border-zinc-200 rounded-2xl p-5 active:bg-zinc-100"
                     >
                         <Text className="text-zinc-900 font-bold text-base mb-1">
@@ -60,7 +60,7 @@ export default function HubIndex() {
                     {/* Solo admin puede crear convocatorias */}
                     {rol === 'admin' && (
                         <Pressable
-                            onPress={() => router.push('/(tabs)/nueva-convocatoria')}
+                            onPress={() => router.push('/(tabs)/nueva-convocatoria' as any)}
                             className="bg-zinc-50 border border-zinc-200 rounded-2xl p-5 active:bg-zinc-100"
                         >
                             <Text className="text-zinc-900 font-bold text-base mb-1">
