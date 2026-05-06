@@ -3,6 +3,7 @@ from router import router
 from vacantes_router import router as vacantes_router
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
+from cors_and_cookies import build_cors_config
 
 
 def create_app() -> FastAPI:
@@ -11,15 +12,8 @@ def create_app() -> FastAPI:
     app.include_router(router)
     app.include_router(vacantes_router)
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[
-            "https://d561t2pbktp9t.cloudfront.net"
-        ],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    cors_cfg = build_cors_config()
+    app.add_middleware(CORSMiddleware, **cors_cfg)
     
     return app
 

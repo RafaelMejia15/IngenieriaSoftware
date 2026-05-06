@@ -1,7 +1,9 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
+
 from auth_classes import AuthService
+from cors_and_cookies import set_auth_access_cookie
 from database import get_db
 from email_service import (
     get_password_reset_link,
@@ -30,7 +32,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         id_usuario=user_data.id_usuario,
         rol=user_data.nombre_rol,
     )
-    return JSONResponse(
+    response = JSONResponse(
         content={
             "msg": "OK",
             "rol": user_data.nombre_rol,
@@ -38,6 +40,8 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
             "token_type": "bearer",
         }
     )
+    set_auth_access_cookie(response, access)
+    return response
 
 
 @router.post("/register")

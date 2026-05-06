@@ -1,6 +1,8 @@
+import os
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Cookie, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from sqlalchemy.orm import Session
@@ -21,18 +23,33 @@ class CurrentUser:
         self.nombre_rol = nombre_rol
 
 
+def _raw_token_from_request(
+    credentials: HTTPAuthorizationCredentials | None,
+    cookie_token: str | None,
+) -> str | None:
+    if credentials and credentials.credentials:
+        return credentials.credentials.strip()
+    if cookie_token:
+        return cookie_token.strip()
+    return None
+
+
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials | None = Depends(http_bearer),
+    credentials: Annotated[
+        HTTPAuthorizationCredentials | None, Depends(http_bearer)
+    ],
     db: Session = Depends(get_db),
+    access_token: Annotated[str | None, Cookie()] = None,
 ) -> CurrentUser:
-    if credentials is None or not credentials.credentials:
+    raw = _raw_token_from_request(credentials, access_token)
+    if not raw:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Autenticación requerida",
             headers={"WWW-Authenticate": "Bearer"},
         )
     try:
-        payload = decode_access_token(credentials.credentials)
+        payload = decode_access_token(raw)
         email = str(payload.get("sub") or "")
         id_str = payload.get("id_usuario")
         rol = str(payload.get("rol") or "")
