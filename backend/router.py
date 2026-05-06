@@ -1,9 +1,9 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
-import os
 
 from auth_classes import AuthService
+from cors_and_cookies import set_auth_access_cookie
 from database import get_db
 from email_service import (
     get_password_reset_link,
@@ -17,7 +17,7 @@ from schemas import (
     RegisterRequest,
     ResetPasswordRequest,
 )
-from security import JWT_EXPIRE_MINUTES, create_access_token
+from security import create_access_token
 
 router = APIRouter()
 
@@ -40,19 +40,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
             "token_type": "bearer",
         }
     )
-    _secure = os.getenv("COOKIE_SECURE", "").lower() in ("1", "true", "yes")
-    _samesite = os.getenv("COOKIE_SAMESITE", "lax").strip().lower()
-    if _samesite not in ("lax", "strict", "none"):
-        _samesite = "lax"
-    response.set_cookie(
-        key="access_token",
-        value=access,
-        max_age=JWT_EXPIRE_MINUTES * 60,
-        httponly=True,
-        secure=_secure,
-        samesite="none",
-        path="/",
-    )
+    set_auth_access_cookie(response, access)
     return response
 
 
