@@ -117,15 +117,16 @@ export default function NuevaConvocatoriaScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1 }} className="bg-white">
       <KeyboardAvoidingView
-        className="flex-1"
+        style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView 
-          style={{ flex: 1 }} 
-          contentContainerStyle={{ padding: 16, paddingBottom: 160 }} 
+          className="flex-1"
+          contentContainerStyle={{ padding: 16, paddingBottom: 160, flexGrow: 1 }} 
           showsVerticalScrollIndicator={true}
+          keyboardShouldPersistTaps="handled"
         >
 
           {/* Encabezado */}
