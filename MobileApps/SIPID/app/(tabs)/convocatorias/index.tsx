@@ -1,6 +1,7 @@
-import { useConvocatoriasActivasQuery } from '@/features/vacantes/api/vacantesQueries';
+import { useConvocatoriasActivasQuery, useConvocatoriasAdminQuery } from '@/features/vacantes/api/vacantesQueries';
 import { Convocatoria } from '@/types/vacantes.types';
 import { useState } from 'react';
+import { useAuthStore } from '@/stores/useAuthStore';
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -43,7 +44,16 @@ function ConvocatoriaCard({ item }: { item: Convocatoria }) {
 
 export default function ConvocatoriasScreen() {
   const [query, setQuery] = useState('');
-  const { data, isLoading, isError } = useConvocatoriasActivasQuery(query || undefined);
+  const { user } = useAuthStore();
+  const isAdmin = user?.rol?.toLowerCase() === 'admin' || user?.rol?.toLowerCase() === 'administrador';
+
+  // Usa la query correspondiente según el rol, deshabilitando la que no corresponde
+  const { data: dataActivas, isLoading: loadingActivas, isError: errorActivas } = useConvocatoriasActivasQuery(isAdmin ? undefined : query || undefined, !isAdmin);
+  const { data: dataAdmin, isLoading: loadingAdmin, isError: errorAdmin } = useConvocatoriasAdminQuery(isAdmin ? query || undefined : undefined, isAdmin);
+
+  const data = isAdmin ? dataAdmin : dataActivas;
+  const isLoading = isAdmin ? loadingAdmin : loadingActivas;
+  const isError = isAdmin ? errorAdmin : errorActivas;
 
   return (
     <SafeAreaView className="flex-1 bg-white">

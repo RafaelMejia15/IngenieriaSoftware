@@ -67,3 +67,18 @@ export const getConvocatoriasActivas = async (
   console.log("[CONVOCATORIAS-ACTIVAS] response →", response.data);
   return response.data;
 };
+
+/**
+ * Lista todas las convocatorias (solo admin).
+ * El parámetro `q` filtra por nombre (búsqueda parcial).
+ */
+export const getConvocatoriasAdmin = async (
+  q?: string,
+): Promise<ConvocatoriaListResponse> => {
+  console.log("[CONVOCATORIAS-ADMIN] GET /admin/convocatorias", q ? `?q=${q}` : "");
+  const response = await apiClient.get("/admin/convocatorias", {
+    params: q ? { q } : undefined,
+  });
+  console.log("[CONVOCATORIAS-ADMIN] response →", response.data);
+  return response.data;
+};

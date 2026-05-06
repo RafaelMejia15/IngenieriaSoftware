@@ -5,7 +5,8 @@ import { Text, View, SafeAreaView, ScrollView, Pressable } from "react-native";
 
 export default function HubIndex() {
     const { user, logout } = useAuthStore();
-    const rol = user?.username?.toLowerCase(); // "admin" | "usuario"
+    const rolRaw = (user?.rol || '').toLowerCase();
+    const rol = (rolRaw === 'admin' || rolRaw === 'administrador') ? 'admin' : rolRaw;
 
     const handleLogout = () => {
         logout();
@@ -28,8 +29,8 @@ export default function HubIndex() {
 
                     <View className="gap-4">
                         <View className="bg-white p-4 rounded-2xl border border-zinc-100">
-                            <Text className="text-zinc-400 text-xs mb-1">Rol devuelto por Backend</Text>
-                            <Text className="text-zinc-900 font-medium">{user?.username || 'N/A'}</Text>
+                            <Text className="text-zinc-400 text-xs mb-1">Rol </Text>
+                            <Text className="text-zinc-900 font-medium">{user?.rol || 'N/A'}</Text>
                         </View>
                         <View className="bg-white p-4 rounded-2xl border border-zinc-100">
                             <Text className="text-zinc-400 text-xs mb-1">Mensaje del Backend</Text>

@@ -22,11 +22,12 @@ export const useLoginMutation = () => {
       console.log("[LOGIN] response →", response);
       const token = response.access_token;
       const user: User = {
-        username: response.rol || "usuario",
+        username: "",
         nombre: response.msg || "",
         email: "",
         apellidoPaterno: "",
         apellidoMaterno: "",
+        rol: response.rol || "usuario",
       };
       setAuth(token, user);
     },

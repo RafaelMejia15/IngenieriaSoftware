@@ -4,6 +4,7 @@ export interface User {
   nombre: string;
   apellidoPaterno: string;
   apellidoMaterno: string;
+  rol?: string;
 }
 
 export type UserRole = 'usuario' | 'admin';

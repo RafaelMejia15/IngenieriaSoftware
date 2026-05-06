@@ -122,7 +122,11 @@ export default function NuevaConvocatoriaScreen() {
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView className="flex-1" contentContainerClassName="p-4 pb-32" showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          style={{ flex: 1 }} 
+          contentContainerStyle={{ padding: 16, paddingBottom: 160 }} 
+          showsVerticalScrollIndicator={true}
+        >
 
           {/* Encabezado */}
           <View className="mb-8">
@@ -161,25 +165,55 @@ export default function NuevaConvocatoriaScreen() {
                     error={touched.nombre && errors.nombre ? errors.nombre : undefined}
                   />
 
-                  <InputField
-                    label="Fecha de inicio (AAAA-MM-DD)"
-                    placeholder="Ej. 2025-06-01"
-                    value={values.fecha_inicio}
-                    onChangeText={handleChange('fecha_inicio')}
-                    onBlur={() => setFieldTouched('fecha_inicio', true)}
-                    error={touched.fecha_inicio && errors.fecha_inicio ? errors.fecha_inicio : undefined}
-                    type="date"
-                  />
+                  {Platform.OS === 'web' ? (
+                    <View className="gap-1">
+                      <Text className="text-zinc-500 text-sm font-medium mb-1">Fecha de inicio</Text>
+                      <input 
+                        type="date"
+                        value={values.fecha_inicio}
+                        onChange={(e) => setFieldValue('fecha_inicio', e.target.value)}
+                        onBlur={() => setFieldTouched('fecha_inicio', true)}
+                        className={`w-full px-4 py-4 rounded-xl border focus:outline-none transition-all text-base font-medium ${touched.fecha_inicio && errors.fecha_inicio ? "border-red-500 bg-red-50 text-red-900" : "border-zinc-200 bg-zinc-50 text-zinc-900 focus:border-zinc-400"}`}
+                      />
+                      {touched.fecha_inicio && errors.fecha_inicio && (
+                        <Text className="text-red-500 text-xs mt-1">{errors.fecha_inicio}</Text>
+                      )}
+                    </View>
+                  ) : (
+                    <InputField
+                      label="Fecha de inicio (AAAA-MM-DD)"
+                      placeholder="Ej. 2025-06-01"
+                      value={values.fecha_inicio}
+                      onChangeText={handleChange('fecha_inicio')}
+                      onBlur={() => setFieldTouched('fecha_inicio', true)}
+                      error={touched.fecha_inicio && errors.fecha_inicio ? errors.fecha_inicio : undefined}
+                    />
+                  )}
 
-                  <InputField
-                    label="Fecha de cierre (AAAA-MM-DD)"
-                    placeholder="Ej. 2025-06-30"
-                    value={values.fecha_fin}
-                    onChangeText={handleChange('fecha_fin')}
-                    onBlur={() => setFieldTouched('fecha_fin', true)}
-                    error={touched.fecha_fin && errors.fecha_fin ? errors.fecha_fin : undefined}
-                    type="date"
-                  />
+                  {Platform.OS === 'web' ? (
+                    <View className="gap-1">
+                      <Text className="text-zinc-500 text-sm font-medium mb-1">Fecha de cierre</Text>
+                      <input 
+                        type="date"
+                        value={values.fecha_fin}
+                        onChange={(e) => setFieldValue('fecha_fin', e.target.value)}
+                        onBlur={() => setFieldTouched('fecha_fin', true)}
+                        className={`w-full px-4 py-4 rounded-xl border focus:outline-none transition-all text-base font-medium ${touched.fecha_fin && errors.fecha_fin ? "border-red-500 bg-red-50 text-red-900" : "border-zinc-200 bg-zinc-50 text-zinc-900 focus:border-zinc-400"}`}
+                      />
+                      {touched.fecha_fin && errors.fecha_fin && (
+                        <Text className="text-red-500 text-xs mt-1">{errors.fecha_fin}</Text>
+                      )}
+                    </View>
+                  ) : (
+                    <InputField
+                      label="Fecha de cierre (AAAA-MM-DD)"
+                      placeholder="Ej. 2025-06-30"
+                      value={values.fecha_fin}
+                      onChangeText={handleChange('fecha_fin')}
+                      onBlur={() => setFieldTouched('fecha_fin', true)}
+                      error={touched.fecha_fin && errors.fecha_fin ? errors.fecha_fin : undefined}
+                    />
+                  )}
 
                   <RequisitoSelector
                     requisitos={catalogo ?? []}
