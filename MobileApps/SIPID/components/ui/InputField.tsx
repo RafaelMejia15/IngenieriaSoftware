@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   KeyboardTypeOptions,
+  Platform,
   Pressable,
   Text,
   TextInput,
@@ -17,6 +18,7 @@ type InputFieldProps = {
   secureTextEntry?: boolean;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   keyboardType?: KeyboardTypeOptions;
+  type?: string;
 };
 
 export function InputField({
@@ -29,9 +31,13 @@ export function InputField({
   secureTextEntry = false,
   autoCapitalize = 'sentences',
   keyboardType = 'default',
+  type,
 }: InputFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  // Truco para react-native-web: pasar atributos nativos de HTML
+  const webProps = Platform.OS === 'web' && type ? { type } : {};
 
   return (
     <View className="gap-1">
@@ -59,6 +65,7 @@ export function InputField({
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
           autoCorrect={false}
+          {...(webProps as any)}
         />
 
         {secureTextEntry && (
