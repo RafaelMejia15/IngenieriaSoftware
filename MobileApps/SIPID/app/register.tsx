@@ -41,8 +41,15 @@ export default function RegisterScreen() {
       await registerAction(values);
       setSuccessMessage('Cuenta creada. Revisa tu correo para activarla.');
       setErrorMessage(null);
-    } catch {
-      setErrorMessage('Error al crear la cuenta. Intenta de nuevo.');
+      setTimeout(() => {
+        router.replace('/');
+      }, 2500);
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        setErrorMessage('La cuenta ya está registrada.');
+      } else {
+        setErrorMessage('Error al crear la cuenta. Intenta de nuevo.');
+      }
       setSuccessMessage(null);
     }
   };

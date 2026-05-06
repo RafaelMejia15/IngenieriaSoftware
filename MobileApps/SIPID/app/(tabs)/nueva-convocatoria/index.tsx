@@ -3,7 +3,6 @@ import { InputField } from '@/components/ui/InputField';
 import { useCrearConvocatoriaMutation } from '@/features/vacantes/api/vacantesMutations';
 import { useCatalogoRequisitosQuery } from '@/features/vacantes/api/vacantesQueries';
 import { CatalogoRequisito } from '@/types/vacantes.types';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Formik } from 'formik';
 import { useState } from 'react';
 import {
@@ -23,8 +22,11 @@ const NuevaConvocatoriaSchema = Yup.object().shape({
     .min(1, 'El nombre es requerido')
     .max(2000, 'Máximo 2000 caracteres')
     .required('El nombre es requerido'),
-  fecha_inicio: Yup.string().required('La fecha de inicio es requerida'),
+  fecha_inicio: Yup.string()
+    .matches(/^\d{4}-\d{2}-\d{2}$/, 'El formato debe ser AAAA-MM-DD')
+    .required('La fecha de inicio es requerida'),
   fecha_fin: Yup.string()
+    .matches(/^\d{4}-\d{2}-\d{2}$/, 'El formato debe ser AAAA-MM-DD')
     .required('La fecha de fin es requerida')
     .test('fecha-valida', 'La fecha fin debe ser posterior a la fecha inicio', function (value) {
       const { fecha_inicio } = this.parent;
@@ -85,57 +87,6 @@ function RequisitoSelector({
   );
 }
 
-// ─── DatePicker Field ─────────────────────────────────────────────────────────
-function DatePickerField({
-  label,
-  value,
-  onChange,
-  error,
-}: {
-  label: string;
-  value: string;
-  onChange: (iso: string) => void;
-  error?: string;
-}) {
-  const [show, setShow] = useState(false);
-  const date = value ? new Date(value) : new Date();
-
-  const handleChange = (_event: DateTimePickerEvent, selected?: Date) => {
-    setShow(false);
-    if (selected) {
-      onChange(selected.toISOString());
-    }
-  };
-
-  return (
-    <View className="gap-1">
-      <Text className="text-zinc-500 text-sm font-medium mb-1">{label}</Text>
-      <Pressable
-        onPress={() => setShow(true)}
-        className={`border rounded-xl px-4 py-4 bg-zinc-50 ${
-          error ? 'border-red-500' : 'border-zinc-200'
-        }`}
-      >
-        <Text className={value ? 'text-zinc-900 text-base' : 'text-zinc-400 text-base'}>
-          {value ? new Date(value).toLocaleDateString('es-MX', {
-            day: '2-digit', month: 'long', year: 'numeric',
-          }) : 'Seleccionar fecha'}
-        </Text>
-      </Pressable>
-      {error && <Text className="text-red-500 text-xs mt-1">{error}</Text>}
-      {show && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={handleChange}
-          minimumDate={new Date()}
-        />
-      )}
-    </View>
-  );
-}
-
 // ─── Pantalla Principal ────────────────────────────────────────────────────────
 export default function NuevaConvocatoriaScreen() {
   const { data: catalogo, isLoading: loadingCatalogo } = useCatalogoRequisitosQuery();
@@ -150,7 +101,13 @@ export default function NuevaConvocatoriaScreen() {
     requisito_ids: string[];
   }) => {
     try {
-      const result = await crear(values);
+      // Agregamos la hora para que el backend lo reciba como fecha completa si es necesario
+      const payload = {
+        ...values,
+        fecha_inicio: `${values.fecha_inicio}T00:00:00Z`,
+        fecha_fin: `${values.fecha_fin}T23:59:59Z`,
+      };
+      const result = await crear(payload);
       setSuccessMessage(`Convocatoria "${result.nombre}" creada exitosamente.`);
       setErrorMessage(null);
     } catch {
@@ -165,7 +122,7 @@ export default function NuevaConvocatoriaScreen() {
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1" contentContainerClassName="p-4 pb-32" showsVerticalScrollIndicator={false}>
 
           {/* Encabezado */}
           <View className="mb-8">
@@ -204,18 +161,24 @@ export default function NuevaConvocatoriaScreen() {
                     error={touched.nombre && errors.nombre ? errors.nombre : undefined}
                   />
 
-                  <DatePickerField
-                    label="Fecha de inicio"
+                  <InputField
+                    label="Fecha de inicio (AAAA-MM-DD)"
+                    placeholder="Ej. 2025-06-01"
                     value={values.fecha_inicio}
-                    onChange={(iso) => setFieldValue('fecha_inicio', iso)}
+                    onChangeText={handleChange('fecha_inicio')}
+                    onBlur={() => setFieldTouched('fecha_inicio', true)}
                     error={touched.fecha_inicio && errors.fecha_inicio ? errors.fecha_inicio : undefined}
+                    type="date"
                   />
 
-                  <DatePickerField
-                    label="Fecha de cierre"
+                  <InputField
+                    label="Fecha de cierre (AAAA-MM-DD)"
+                    placeholder="Ej. 2025-06-30"
                     value={values.fecha_fin}
-                    onChange={(iso) => setFieldValue('fecha_fin', iso)}
+                    onChangeText={handleChange('fecha_fin')}
+                    onBlur={() => setFieldTouched('fecha_fin', true)}
                     error={touched.fecha_fin && errors.fecha_fin ? errors.fecha_fin : undefined}
+                    type="date"
                   />
 
                   <RequisitoSelector
