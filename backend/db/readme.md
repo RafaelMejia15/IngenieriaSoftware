@@ -89,3 +89,12 @@ La arquitectura de este schema se ha desplegado en las siguientes fases lógicas
 
 * Tablas `catalogo_requisito`, `convocatoria`, `convocatoria_requisito` y seed de códigos P01–P10 (ver script `script_sprint3_convocatorias.sql`).
 * Autenticación JWT en la API para separar rutas de administrador y aspirante (`usuario` en rol = aspirante en SISED).
+
+### **Sprint 4: Postulación, documentos (S3) y panel administrador**
+
+Script: [`script_sprint4_postulaciones_s3.sql`](script_sprint4_postulaciones_s3.sql). Extiende el modelo Sprint 3 con la postulación del aspirante a una convocatoria y evidencias por requisito, alineado al concepto SISED sin el motor de grupos/condiciones.
+
+* **`postulacion`**: Una fila por par `(id_convocatoria, id_usuario)`; estado operativo inicial `RECIBIDA` (campos preparados para `EN_REVISION`, `ACEPTADA`, `RECHAZADA`); `creada_en` en UTC.
+* **`postulacion_documento`**: A lo más un archivo por `(id_postulacion, id_requisito)`; metadatos de trazabilidad (`s3_bucket`, `s3_key`, `nombre_original`, `content_type`, `tamano_bytes`); opcionalmente `estado_validacion` (por defecto `PENDIENTE` en uso actual). Solo se admiten `id_requisito` ligados por `convocatoria_requisito` a la convocatoría de esa postulación.
+
+Almacenamiento de binarios en **AWS S3** mediante `boto3`. Variables típicas: `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (u otro método de credenciales en AWS), `S3_BUCKET`, `S3_PREFIX` opcional y límite de tamaño (`UPLOAD_MAX_BYTES` / configuración aplicación). Rutas REST: aspirante puede postular, subir multipart por `id_requisito`, consultar convocatorias con `ya_postulo`/`id_postulacion` y `mis-postulaciones`; admin lista postulaciones por convocatoria y detalle con descarga mediante URL prefirmada para documentos subidos.

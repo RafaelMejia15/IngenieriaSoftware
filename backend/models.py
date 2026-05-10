@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, false, func
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, String, Text, false, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -94,6 +94,11 @@ class Convocatoria(Base):
         back_populates="convocatoria",
         cascade="all, delete-orphan",
     )
+    postulaciones: Mapped[list[Postulacion]] = relationship(
+        "Postulacion",
+        back_populates="convocatoria",
+        cascade="all, delete-orphan",
+    )
 
 
 class ConvocatoriaRequisito(Base):
@@ -113,5 +118,70 @@ class ConvocatoriaRequisito(Base):
 
     convocatoria: Mapped[Convocatoria] = relationship(
         "Convocatoria", back_populates="requisitos_vinculo"
+    )
+    requisito: Mapped[CatalogoRequisito] = relationship("CatalogoRequisito")
+
+
+class Postulacion(Base):
+    __tablename__ = "postulacion"
+
+    id_postulacion: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    id_convocatoria: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("convocatoria.id_convocatoria", ondelete="CASCADE"),
+        nullable=False,
+    )
+    id_usuario: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("usuario.id_usuario", ondelete="CASCADE"),
+        nullable=False,
+    )
+    estado: Mapped[str] = mapped_column(String(32), nullable=False, default="RECIBIDA")
+    creada_en: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    convocatoria: Mapped[Convocatoria] = relationship(
+        "Convocatoria", back_populates="postulaciones"
+    )
+    documentos: Mapped[list[PostulacionDocumento]] = relationship(
+        "PostulacionDocumento",
+        back_populates="postulacion",
+        cascade="all, delete-orphan",
+    )
+
+
+class PostulacionDocumento(Base):
+    __tablename__ = "postulacion_documento"
+
+    id_postulacion_documento: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    id_postulacion: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("postulacion.id_postulacion", ondelete="CASCADE"),
+        nullable=False,
+    )
+    id_requisito: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("catalogo_requisito.id_requisito", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    s3_bucket: Mapped[str] = mapped_column(String(255), nullable=False)
+    s3_key: Mapped[str] = mapped_column(Text, nullable=False)
+    nombre_original: Mapped[str] = mapped_column(String(512), nullable=False)
+    content_type: Mapped[str] = mapped_column(String(255), nullable=False)
+    tamano_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    estado_validacion: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="PENDIENTE"
+    )
+    subido_en: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    postulacion: Mapped[Postulacion] = relationship(
+        "Postulacion", back_populates="documentos"
     )
     requisito: Mapped[CatalogoRequisito] = relationship("CatalogoRequisito")

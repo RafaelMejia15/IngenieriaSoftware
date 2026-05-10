@@ -5,14 +5,16 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session, selectinload
 
-from deps import require_admin, require_catalogo_reader, require_usuario_aspirante
+from deps import CurrentUser, require_admin, require_catalogo_reader, require_usuario_aspirante
 from database import get_db
-from models import CatalogoRequisito, Convocatoria, ConvocatoriaRequisito
+from models import CatalogoRequisito, Convocatoria, ConvocatoriaRequisito, Postulacion
 from vacantes_schemas import (
     CatalogoRequisitoResponse,
     ConvocatoriaCreateRequest,
     ConvocatoriaListResponse,
     ConvocatoriaResponse,
+    ConvocatoriaParaAspiranteListResponse,
+    ConvocatoriaParaAspiranteResponse,
     RequisitoEnConvocatoria,
 )
 
@@ -120,26 +122,32 @@ def _active_filters():
 
 @router.get(
     "/aspirante/convocatorias",
-    response_model=ConvocatoriaListResponse,
+    response_model=ConvocatoriaParaAspiranteListResponse,
     summary="Buscador aspirante (solo convocatorias vigentes)",
     description=(
         "Solo rol **usuario** (aspirante). Solo devuelve convocatorias con estado "
         "**ABIERTA** y cuya vigencia incluye el instante actual en **UTC** "
-        "(fecha_inicio ≤ ahora ≤ fecha_fin). Si creaste plazas con "
-        "fecha_inicio en el futuro o fecha_fin ya pasada, aquí no aparecen. "
+        "(fecha_inicio ≤ ahora ≤ fecha_fin). Incluye `ya_postulo` y `id_postulacion`. "
         "Los administradores deben usar **GET /admin/convocatorias**."
     ),
 )
 def buscar_convocatorias_activas(
     db: Session = Depends(get_db),
-    _user=Depends(require_usuario_aspirante),
+    user: CurrentUser = Depends(require_usuario_aspirante),
     q: str | None = Query(
         None,
         description="Texto para buscar en el nombre de la vacante (ILIKE)",
     ),
 ):
     stmt = (
-        select(Convocatoria)
+        select(Convocatoria, Postulacion.id_postulacion)
+        .outerjoin(
+            Postulacion,
+            and_(
+                Postulacion.id_convocatoria == Convocatoria.id_convocatoria,
+                Postulacion.id_usuario == user.id_usuario,
+            ),
+        )
         .options(
             selectinload(Convocatoria.requisitos_vinculo).selectinload(
                 ConvocatoriaRequisito.requisito
@@ -150,9 +158,19 @@ def buscar_convocatorias_activas(
     )
     if q and q.strip():
         stmt = stmt.where(Convocatoria.nombre.ilike(f"%{q.strip()}%"))
-    rows = db.scalars(stmt).all()
-    items = [_convocatoria_from_model(c) for c in rows]
-    return ConvocatoriaListResponse(items=items)
+
+    pairs = db.execute(stmt).unique().all()
+    items: list[ConvocatoriaParaAspiranteResponse] = []
+    for conv, pid in pairs:
+        base = _convocatoria_from_model(conv)
+        items.append(
+            ConvocatoriaParaAspiranteResponse(
+                **base.model_dump(),
+                ya_postulo=pid is not None,
+                id_postulacion=pid,
+            )
+        )
+    return ConvocatoriaParaAspiranteListResponse(items=items)
 
 
 def _convocatoria_to_response(db: Session, id_conv: UUID) -> ConvocatoriaResponse:
