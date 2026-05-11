@@ -31,9 +31,12 @@ services:
       - JWT_ALGORITHM=HS256
       - JWT_EXPIRE_MINUTES=60
       # Front y API en dominios distintos: cookie SameSite=None + Secure; CORS con credenciales
-      - COOKIE_CROSS_SITE=true
+      - COOKIE_CROSS_SITE=${COOKIE_CROSS_SITE:-true}
+      - COOKIE_SAMESITE=${COOKIE_SAMESITE:-lax}
+      - COOKIE_SECURE=${COOKIE_SECURE:-true}
       # Orígenes permitidos (lista separada por comas); o usar CORS_ALLOW_ALL=true para desarrollo
       - CORS_ORIGINS=${CORS_ORIGINS:-https://d561t2pbktp9t.cloudfront.net}
+      - CORS_ALLOW_ALL=${CORS_ALLOW_ALL:-false}
       # Si necesitas cualquier origin con credenciales (solo si asumes el riesgo): CORS_ALLOW_ALL=true
       - AWS_REGION=${AWS_REGION:-us-east-2}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}

@@ -6,7 +6,7 @@ import { UserRole } from '@/types/user.types';
 import { useRouter } from 'expo-router';
 import { Formik } from 'formik';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import * as Yup from 'yup';
 
 const RegisterSchema = Yup.object().shape({
@@ -60,86 +60,88 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined}
       enabled={Platform.OS !== 'web'}
     >
-      <View className="flex-1 justify-center w-full md:w-[800px] mx-auto p-4 md:p-20">
+      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+        <View className="justify-center w-full md:w-[800px] mx-auto p-4 md:p-20 flex-grow">
 
-        {/* Encabezado */}
-        <View className="mb-10">
-          <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
-            Crear cuenta
-          </Text>
-          <Text className="text-sm text-zinc-500 mt-1">
-            Regístrate para continuar
-          </Text>
-        </View>
+          {/* Encabezado */}
+          <View className="mb-10">
+            <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
+              Crear cuenta
+            </Text>
+            <Text className="text-sm text-zinc-500 mt-1">
+              Regístrate para continuar
+            </Text>
+          </View>
 
-        <Formik
-          initialValues={{ email: '', password: '', rol: 'usuario' as UserRole }}
-          validationSchema={RegisterSchema}
-          onSubmit={handleRegister}
-        >
-          {({ values, errors, touched, handleChange, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
-            <View className="gap-4">
-              <InputField
-                label="Correo"
-                placeholder="ejemplo@correo.com"
-                value={values.email}
-                onChangeText={handleChange('email')}
-                onBlur={() => setFieldTouched('email', true)}
-                error={touched.email && errors.email ? errors.email : undefined}
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
-
-              <InputField
-                label="Contraseña"
-                placeholder="••••••••"
-                value={values.password}
-                onChangeText={handleChange('password')}
-                onBlur={() => setFieldTouched('password', true)}
-                error={touched.password && errors.password ? errors.password : undefined}
-                secureTextEntry
-              />
-
-              <SelectField
-                label="Rol"
-                value={values.rol}
-                options={rolOptions}
-                onChange={(val) => setFieldValue('rol', val)}
-                error={touched.rol && errors.rol ? errors.rol : undefined}
-              />
-
-              <View className="mt-2">
-                <Button
-                  label="Crear cuenta"
-                  onPress={() => handleSubmit()}
-                  loading={isSubmitting || isPending}
+          <Formik
+            initialValues={{ email: '', password: '', rol: 'usuario' as UserRole }}
+            validationSchema={RegisterSchema}
+            onSubmit={handleRegister}
+          >
+            {({ values, errors, touched, handleChange, setFieldTouched, setFieldValue, handleSubmit, isSubmitting }) => (
+              <View className="gap-4">
+                <InputField
+                  label="Correo"
+                  placeholder="ejemplo@correo.com"
+                  value={values.email}
+                  onChangeText={handleChange('email')}
+                  onBlur={() => setFieldTouched('email', true)}
+                  error={touched.email && errors.email ? errors.email : undefined}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
                 />
+
+                <InputField
+                  label="Contraseña"
+                  placeholder="••••••••"
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  onBlur={() => setFieldTouched('password', true)}
+                  error={touched.password && errors.password ? errors.password : undefined}
+                  secureTextEntry
+                />
+
+                <SelectField
+                  label="Rol"
+                  value={values.rol}
+                  options={rolOptions}
+                  onChange={(val) => setFieldValue('rol', val)}
+                  error={touched.rol && errors.rol ? errors.rol : undefined}
+                />
+
+                <View className="mt-2">
+                  <Button
+                    label="Crear cuenta"
+                    onPress={() => handleSubmit()}
+                    loading={isSubmitting || isPending}
+                  />
+                </View>
               </View>
+            )}
+          </Formik>
+
+          {successMessage && (
+            <View className="mt-4 bg-zinc-100 border border-zinc-200 rounded-xl p-4">
+              <Text className="text-zinc-900 text-sm text-center">{successMessage}</Text>
             </View>
           )}
-        </Formik>
 
-        {successMessage && (
-          <View className="mt-4 bg-zinc-100 border border-zinc-200 rounded-xl p-4">
-            <Text className="text-zinc-900 text-sm text-center">{successMessage}</Text>
-          </View>
-        )}
+          {errorMessage && (
+            <View className="mt-2">
+              <Text className="text-red-500 text-md text-center">{errorMessage}</Text>
+            </View>
+          )}
 
-        {errorMessage && (
-          <View className="mt-2">
-            <Text className="text-red-500 text-md text-center">{errorMessage}</Text>
-          </View>
-        )}
+          {/* Link al Login */}
+          <Pressable onPress={() => router.replace('/')} className="mt-6 items-center">
+            <Text className="text-zinc-400 text-sm">
+              ¿Ya tienes cuenta?{' '}
+              <Text className="text-zinc-900 font-semibold">Iniciar sesión</Text>
+            </Text>
+          </Pressable>
 
-        {/* Link al Login */}
-        <Pressable onPress={() => router.replace('/')} className="mt-6 items-center">
-          <Text className="text-zinc-400 text-sm">
-            ¿Ya tienes cuenta?{' '}
-            <Text className="text-zinc-900 font-semibold">Iniciar sesión</Text>
-          </Text>
-        </Pressable>
-
-      </View>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

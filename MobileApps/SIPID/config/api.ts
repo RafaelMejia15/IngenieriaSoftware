@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useAuthStore } from "@/stores/useAuthStore";
 
-// const API_URL = "http://localhost:8080";
-const API_URL = "https://uwu.dantech.com.mx";
+const API_URL = "http://localhost:8500";
+//const API_URL = "https://uwu.dantech.com.mx";
 
 if (!API_URL) {
   console.error(
