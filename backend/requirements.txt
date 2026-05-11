@@ -5,3 +5,4 @@ bcrypt
 psycopg2-binary
 python-jose[cryptography]
 boto3
+python-multipart

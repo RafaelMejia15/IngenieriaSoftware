@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import * as Yup from 'yup';
+import { Header } from '@/components/ui/Header';
 
 const NuevaConvocatoriaSchema = Yup.object().shape({
   nombre: Yup.string()
@@ -118,6 +119,7 @@ export default function NuevaConvocatoriaScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white">
+      <Header title="Nueva Convocatoria" showBack={false} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

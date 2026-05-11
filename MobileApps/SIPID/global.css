@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface-50 text-surface-900;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 border border-white/20 shadow-sm;
+  }
+  .glass-dark {
+    @apply bg-surface-900/80 border border-surface-700/50 shadow-md;
+  }
+}

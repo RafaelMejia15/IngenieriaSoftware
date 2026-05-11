@@ -31,7 +31,16 @@ export interface Convocatoria {
   requisitos_obligatorios: RequisitoEnConvocatoria[];
 }
 
+export interface ConvocatoriaParaAspiranteResponse extends Convocatoria {
+  ya_postulo: boolean;
+  id_postulacion: string | null;
+}
+
 // ─── Lista de Convocatorias (response) ────────────────────────────────────────
 export interface ConvocatoriaListResponse {
   items: Convocatoria[];
+}
+
+export interface ConvocatoriaParaAspiranteListResponse {
+  items: ConvocatoriaParaAspiranteResponse[];
 }
