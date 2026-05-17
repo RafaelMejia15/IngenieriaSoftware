@@ -4,15 +4,32 @@
 
 @layer base {
   body {
-    @apply bg-surface-50 text-surface-900;
+    @apply bg-zinc-950 text-zinc-50;
   }
 }
 
 @layer utilities {
+  /* Dark glassmorphism card */
   .glass {
-    @apply bg-white/70 border border-white/20 shadow-sm;
+    @apply bg-zinc-900/80 border border-zinc-800 shadow-lg;
   }
+  /* Purple glow border on focus */
   .glass-dark {
-    @apply bg-surface-900/80 border border-surface-700/50 shadow-md;
+    @apply bg-zinc-950/90 border border-purple-500/30 shadow-md;
+  }
+  /* Input web focus ring */
+  .input-dark {
+    background-color: #09090b;
+    border-color: #3f3f46;
+    color: #fafafa;
+  }
+  .input-dark:focus {
+    border-color: #8b5cf6;
+    outline: none;
+    box-shadow: 0 0 0 1px #8b5cf6;
+  }
+  /* Date input dark override */
+  input[type="date"].input-dark {
+    color-scheme: dark;
   }
 }

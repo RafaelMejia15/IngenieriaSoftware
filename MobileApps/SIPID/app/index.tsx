@@ -34,7 +34,7 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      className="flex-1 bg-zinc-950"
       behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined}
       enabled={Platform.OS !== 'web'}
     >
@@ -43,10 +43,14 @@ export default function LoginScreen() {
 
           {/* Encabezado */}
           <View className="mb-10">
-            <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
+            {/* Micro-copy: SIPID tag */}
+            <Text className="text-xs font-bold uppercase tracking-widest text-purple-400 mb-3">
+              SIPID · Sistema de Postulaciones
+            </Text>
+            <Text className="text-4xl font-bold text-zinc-50 tracking-tight">
               Bienvenido
             </Text>
-            <Text className="text-sm text-zinc-500 mt-1">
+            <Text className="text-sm text-zinc-400 mt-2">
               Inicia sesión para continuar
             </Text>
           </View>
@@ -89,25 +93,26 @@ export default function LoginScreen() {
               </View>
             )}
           </Formik>
+
           {errorMessage && (
-            <View className="mt-2">
-              <Text className="text-red-500 text-md text-center">{errorMessage}</Text>
+            <View className="mt-4 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+              <Text className="text-red-400 text-sm text-center font-medium">{errorMessage}</Text>
             </View>
           )}
 
           {/* Links de navegación */}
-          <View className="mt-6 gap-3 items-center">
+          <View className="mt-8 gap-3 items-center">
             <Pressable onPress={() => router.push('/forgot-password')}>
-              <Text className="text-zinc-400 text-sm">
+              <Text className="text-zinc-500 text-sm">
                 ¿Olvidaste tu contraseña?{' '}
-                <Text className="text-zinc-900 font-semibold">Recupérala aquí</Text>
+                <Text className="text-purple-400 font-semibold">Recupérala aquí</Text>
               </Text>
             </Pressable>
 
             <Pressable onPress={() => router.push('/register')}>
-              <Text className="text-zinc-400 text-sm">
+              <Text className="text-zinc-500 text-sm">
                 ¿No tienes cuenta?{' '}
-                <Text className="text-zinc-900 font-semibold">Regístrate</Text>
+                <Text className="text-purple-400 font-semibold">Regístrate</Text>
               </Text>
             </Pressable>
           </View>

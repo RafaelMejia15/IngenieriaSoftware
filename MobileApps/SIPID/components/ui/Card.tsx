@@ -6,10 +6,12 @@ interface CardProps extends ViewProps {
 }
 
 export function Card({ children, className = '', variant = 'default', ...props }: CardProps) {
-  const baseClasses = variant === 'glass' 
-    ? 'glass rounded-2xl p-6' 
-    : 'bg-white rounded-2xl p-6 border border-surface-200 shadow-sm';
-    
+  const baseClasses = variant === 'glass'
+    // Glassmorphism dark card
+    ? 'bg-zinc-900/80 rounded-2xl p-6 border border-zinc-700/60'
+    // Default dark card
+    : 'bg-zinc-900 rounded-2xl p-6 border border-zinc-800';
+
   return (
     <View className={`${baseClasses} ${className}`} {...props}>
       {children}

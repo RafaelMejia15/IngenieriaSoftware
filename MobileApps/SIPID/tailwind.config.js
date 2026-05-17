@@ -5,21 +5,31 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Legacy brand colors replaced by purple spectrum
         brand: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          500: '#3b82f6',
-          700: '#1d4ed8',
-          900: '#1e3a8a',
-          950: '#172554',
+          50:  '#f5f3ff',
+          100: '#ede9fe',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          900: '#4c1d95',
+          950: '#2e1065',
         },
+        // Surface palette → deep zinc
         surface: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
-        }
+          50:  '#09090b',   // main background
+          100: '#18181b',   // card/modal bg
+          200: '#27272a',   // elevated surface
+          300: '#3f3f46',   // borders
+          400: '#52525b',   // muted borders
+          500: '#71717a',   // muted text
+          600: '#a1a1aa',   // secondary text
+          700: '#d4d4d8',
+          800: '#e4e4e7',
+          900: '#f4f4f5',   // primary text
+          950: '#fafafa',   // white text
+        },
       }
     },
   },

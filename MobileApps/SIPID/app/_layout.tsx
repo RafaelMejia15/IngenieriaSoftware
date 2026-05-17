@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { LogBox } from 'react-native';
+import { ThemeProvider, DarkTheme } from '@react-navigation/native';
 LogBox.ignoreAllLogs(false);
 
 const queryClient = new QueryClient({
@@ -13,6 +14,20 @@ const queryClient = new QueryClient({
     mutations: { retry: false },
   },
 });
+
+// Custom Premium Dark Enterprise SaaS Theme, extending Navigation DarkTheme (required in v7)
+const MyDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    primary: '#8b5cf6',      // violet-500
+    background: '#09090b',   // zinc-950
+    card: '#09090b',         // zinc-950
+    text: '#fafafa',         // zinc-50
+    border: '#27272a',       // zinc-800
+    notification: '#8b5cf6',
+  },
+};
 
 function RootLayoutNav() {
   const { token } = useAuthStore();
@@ -63,14 +78,16 @@ function RootLayoutNav() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="register" options={{ headerShown: false }} />
-      <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
-      <Stack.Screen name="validate-user" options={{ headerShown: false }} />
-      <Stack.Screen name="reset-password" options={{ headerShown: false }} />
-    </Stack>
+    <ThemeProvider value={MyDarkTheme}>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="register" options={{ headerShown: false }} />
+        <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
+        <Stack.Screen name="validate-user" options={{ headerShown: false }} />
+        <Stack.Screen name="reset-password" options={{ headerShown: false }} />
+      </Stack>
+    </ThemeProvider>
   );
 
 }
@@ -82,3 +99,4 @@ export default function RootLayout() {
     </QueryClientProvider>
   );
 }
+

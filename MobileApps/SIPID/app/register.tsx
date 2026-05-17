@@ -23,7 +23,7 @@ const RegisterSchema = Yup.object().shape({
 
 const rolOptions = [
   { label: 'Usuario', value: 'usuario' },
-  { label: 'Admin',   value: 'admin' },
+  { label: 'Admin', value: 'admin' },
 ];
 
 export default function RegisterScreen() {
@@ -56,7 +56,7 @@ export default function RegisterScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      className="flex-1 bg-zinc-950"
       behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined}
       enabled={Platform.OS !== 'web'}
     >
@@ -65,10 +65,13 @@ export default function RegisterScreen() {
 
           {/* Encabezado */}
           <View className="mb-10">
-            <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
+            <Text className="text-xs font-bold uppercase tracking-widest text-purple-400 mb-3">
+              SIPID · Nueva Cuenta
+            </Text>
+            <Text className="text-4xl font-bold text-zinc-50 tracking-tight">
               Crear cuenta
             </Text>
-            <Text className="text-sm text-zinc-500 mt-1">
+            <Text className="text-sm text-zinc-400 mt-2">
               Regístrate para continuar
             </Text>
           </View>
@@ -121,22 +124,22 @@ export default function RegisterScreen() {
           </Formik>
 
           {successMessage && (
-            <View className="mt-4 bg-zinc-100 border border-zinc-200 rounded-xl p-4">
-              <Text className="text-zinc-900 text-sm text-center">{successMessage}</Text>
+            <View className="mt-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
+              <Text className="text-emerald-400 text-sm text-center font-medium">{successMessage}</Text>
             </View>
           )}
 
           {errorMessage && (
-            <View className="mt-2">
-              <Text className="text-red-500 text-md text-center">{errorMessage}</Text>
+            <View className="mt-4 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+              <Text className="text-red-400 text-sm text-center font-medium">{errorMessage}</Text>
             </View>
           )}
 
           {/* Link al Login */}
-          <Pressable onPress={() => router.replace('/')} className="mt-6 items-center">
-            <Text className="text-zinc-400 text-sm">
+          <Pressable onPress={() => router.replace('/')} className="mt-8 items-center">
+            <Text className="text-zinc-500 text-sm">
               ¿Ya tienes cuenta?{' '}
-              <Text className="text-zinc-900 font-semibold">Iniciar sesión</Text>
+              <Text className="text-purple-400 font-semibold">Iniciar sesión</Text>
             </Text>
           </Pressable>
 

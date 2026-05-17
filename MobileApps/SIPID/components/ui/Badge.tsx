@@ -7,19 +7,21 @@ interface BadgeProps extends ViewProps {
 }
 
 export function Badge({ label, variant = 'default', className = '', ...props }: BadgeProps) {
-  const colors = {
-    success: 'bg-green-100 border-green-200 text-green-700',
-    warning: 'bg-yellow-100 border-yellow-200 text-yellow-800',
-    error: 'bg-red-100 border-red-200 text-red-700',
-    info: 'bg-brand-100 border-brand-200 text-brand-700',
-    default: 'bg-surface-100 border-surface-200 text-surface-600',
-  };
-
-  const selectedColors = colors[variant];
+  // Dark-mode badge palette: translucent colored backgrounds
+  const styles = {
+    success: { container: 'bg-emerald-500/15 border-emerald-500/30', text: 'text-emerald-400' },
+    warning: { container: 'bg-amber-500/15 border-amber-500/30',   text: 'text-amber-400'   },
+    error:   { container: 'bg-red-500/15 border-red-500/30',       text: 'text-red-400'     },
+    info:    { container: 'bg-purple-500/15 border-purple-500/30', text: 'text-purple-400'  },
+    default: { container: 'bg-zinc-800 border-zinc-700',           text: 'text-zinc-400'    },
+  }[variant];
 
   return (
-    <View className={`self-start px-2.5 py-1 rounded-full border ${selectedColors.split(' ').slice(0,2).join(' ')} ${className}`} {...props}>
-      <Text className={`text-xs font-semibold uppercase tracking-wider ${selectedColors.split(' ')[2]}`}>
+    <View
+      className={`self-start px-2.5 py-1 rounded-full border ${styles.container} ${className}`}
+      {...props}
+    >
+      <Text className={`text-xs font-bold uppercase tracking-wider ${styles.text}`}>
         {label}
       </Text>
     </View>

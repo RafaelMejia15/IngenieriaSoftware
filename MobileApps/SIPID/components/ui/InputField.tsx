@@ -41,19 +41,30 @@ export function InputField({
 
   return (
     <View className="gap-1.5 mb-2">
-      <Text className="text-surface-700 text-sm font-semibold ml-1">{label}</Text>
+      {/* Label: uppercase tracking-widest micro-copy style */}
+      <Text className="text-zinc-500 text-xs font-bold uppercase tracking-widest ml-1">
+        {label}
+      </Text>
 
       <View
         className={`
           flex-row items-center
-          border rounded-xl px-4 bg-white shadow-sm transition-all
-          ${error ? 'border-red-400 bg-red-50' : isFocused ? 'border-brand-500 ring-2 ring-brand-100' : 'border-surface-200'}
+          border rounded-xl px-4 bg-zinc-950 transition-all
+          ${error
+            ? 'border-red-500/70'
+            : isFocused
+            ? 'border-purple-500'
+            : 'border-zinc-800'
+          }
         `}
+        style={isFocused && Platform.OS === 'web'
+          ? { boxShadow: '0 0 0 1px #8b5cf6' } as any
+          : undefined}
       >
         <TextInput
-          className="flex-1 text-surface-900 py-3.5 text-base"
+          className="flex-1 text-zinc-50 py-3.5 text-base"
           placeholder={placeholder}
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor="#52525b"
           value={value}
           onChangeText={onChangeText}
           onBlur={() => {
@@ -66,12 +77,12 @@ export function InputField({
           keyboardType={keyboardType}
           autoCorrect={false}
           {...(webProps as any)}
-          style={Platform.OS === 'web' ? { outline: 'none' } as any : undefined}
+          style={Platform.OS === 'web' ? { outline: 'none', color: '#fafafa' } as any : undefined}
         />
 
         {secureTextEntry && (
           <Pressable onPress={() => setIsPasswordVisible(!isPasswordVisible)} className="p-2 -mr-2">
-            <Text className="text-brand-600 font-medium text-sm">
+            <Text className="text-purple-400 font-medium text-sm">
               {isPasswordVisible ? 'Ocultar' : 'Ver'}
             </Text>
           </Pressable>
@@ -79,7 +90,7 @@ export function InputField({
       </View>
 
       {error && (
-        <Text className="text-red-500 text-xs mt-0.5 ml-1 font-medium">{error}</Text>
+        <Text className="text-red-400 text-xs mt-0.5 ml-1 font-medium">{error}</Text>
       )}
     </View>
   );

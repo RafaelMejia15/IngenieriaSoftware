@@ -35,7 +35,7 @@ export default function ResetPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      className="flex-1 bg-zinc-950"
       behavior={Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined}
       enabled={Platform.OS !== 'web'}
     >
@@ -43,10 +43,13 @@ export default function ResetPasswordScreen() {
 
         {/* Encabezado */}
         <View className="mb-10">
-          <Text className="text-3xl font-bold text-zinc-900 tracking-tight">
+          <Text className="text-xs font-bold uppercase tracking-widest text-purple-400 mb-3">
+            SIPID · Restablecer Acceso
+          </Text>
+          <Text className="text-4xl font-bold text-zinc-50 tracking-tight">
             Nueva contraseña
           </Text>
-          <Text className="text-sm text-zinc-500 mt-1">
+          <Text className="text-sm text-zinc-400 mt-2">
             Ingresa tu nueva contraseña para continuar
           </Text>
         </View>
@@ -80,8 +83,8 @@ export default function ResetPasswordScreen() {
         </Formik>
 
         {errorMessage && (
-          <View className="mt-2">
-            <Text className="text-red-500 text-md text-center">{errorMessage}</Text>
+          <View className="mt-4 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <Text className="text-red-400 text-sm text-center font-medium">{errorMessage}</Text>
           </View>
         )}
 

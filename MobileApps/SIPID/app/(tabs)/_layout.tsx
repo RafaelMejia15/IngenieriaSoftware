@@ -12,7 +12,7 @@ export default function TabsLayout() {
 
   if (Platform.OS === 'web') {
     return (
-      <View style={{ height: '100vh', display: 'flex', flexDirection: 'column' } as any}>
+      <View style={{ height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#09090b' } as any}>
         {content}
       </View>
     );
