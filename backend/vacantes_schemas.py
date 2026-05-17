@@ -79,6 +79,7 @@ class MisPostulacionesItemResponse(BaseModel):
     documentos_obligatorios_completos: int
     documentos_obligatorios_total: int
     progreso_porcentaje: int = Field(ge=0, le=100)
+    motivo_rechazo: str | None = None
 
 
 class MisPostulacionesListResponse(BaseModel):

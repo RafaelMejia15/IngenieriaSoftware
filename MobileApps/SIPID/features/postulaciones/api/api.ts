@@ -49,3 +49,29 @@ export const getPostulacionDetalleAdmin = async (idPostulacion: string) => {
   const { data } = await apiClient.get(`/admin/postulaciones/${idPostulacion}`);
   return data;
 };
+
+export const eliminarDocumentoPostulacion = async (idPostulacion: string, idRequisito: string) => {
+  const { data } = await apiClient.delete(`/aspirante/postulaciones/${idPostulacion}/documentos/${idRequisito}`);
+  return data;
+};
+
+export const enviarPostulacion = async (idPostulacion: string) => {
+  const { data } = await apiClient.post(`/aspirante/postulaciones/${idPostulacion}/enviar`);
+  return data;
+};
+
+export const cambiarEstadoPostulacionAdmin = async ({
+  idPostulacion,
+  estado,
+  motivo,
+}: {
+  idPostulacion: string;
+  estado: string;
+  motivo?: string;
+}) => {
+  const { data } = await apiClient.patch(`/admin/postulaciones/${idPostulacion}/estado`, {
+    estado,
+    motivo,
+  });
+  return data;
+};

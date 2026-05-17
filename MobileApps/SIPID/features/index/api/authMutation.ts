@@ -18,13 +18,17 @@ export const useLoginMutation = () => {
       console.log("[LOGIN] payload →", { email, password });
       return login(email, password);
     },
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
       console.log("[LOGIN] response →", response);
       const token = response.access_token;
+      
+      // Extraemos un username/nombre a partir del correo usado en el login
+      const username = variables.email.split('@')[0];
+      
       const user: User = {
-        username: "",
-        nombre: response.msg || "",
-        email: "",
+        username: username,
+        nombre: username, // Mostrado en la UI como nombre principal
+        email: variables.email,
         apellidoPaterno: "",
         apellidoMaterno: "",
         rol: response.rol || "usuario",

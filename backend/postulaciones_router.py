@@ -93,6 +93,13 @@ def _mis_item_from_postulacion(p: Postulacion) -> MisPostulacionesItemResponse:
         )
     total = len(reqs)
     completos = sum(1 for x in reqs if x.documento_subido)
+
+    motivo_rechazo = None
+    if p.historial_estados:
+        latest_hist = max(p.historial_estados, key=lambda x: x.creado_en)
+        if latest_hist.motivo:
+            motivo_rechazo = latest_hist.motivo
+
     return MisPostulacionesItemResponse(
         id_postulacion=p.id_postulacion,
         estado=p.estado,
@@ -105,6 +112,7 @@ def _mis_item_from_postulacion(p: Postulacion) -> MisPostulacionesItemResponse:
         documentos_obligatorios_completos=progreso.completos,
         documentos_obligatorios_total=progreso.total,
         progreso_porcentaje=progreso.porcentaje,
+        motivo_rechazo=motivo_rechazo,
     )
 
 
@@ -276,6 +284,7 @@ def mis_postulaciones(
                 Convocatoria.requisitos_vinculo
             ).selectinload(ConvocatoriaRequisito.requisito),
             selectinload(Postulacion.documentos),
+            selectinload(Postulacion.historial_estados),
         )
         .order_by(Postulacion.creada_en.desc())
     ).all()

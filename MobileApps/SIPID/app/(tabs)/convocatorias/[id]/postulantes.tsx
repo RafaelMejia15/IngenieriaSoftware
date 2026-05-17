@@ -45,9 +45,9 @@ export default function PostulantesConvocatoriaScreen() {
                 <Card key={post.id_postulacion} className="mb-4">
                   <View className="flex-row items-start justify-between mb-2">
                     <Text className="text-surface-900 font-bold text-lg flex-1 mr-2">{post.usuario.correo}</Text>
-                    <Badge label={post.estado} variant="info" />
                   </View>
-                  
+                  <Badge label={post.estado} variant="info" />
+
                   <View className="flex-row items-center justify-between mb-4 mt-2">
                     <Text className="text-surface-500 text-sm font-medium">Progreso:</Text>
                     <Text className="text-brand-600 font-bold text-sm bg-brand-50 px-3 py-1 rounded-full">
@@ -55,8 +55,8 @@ export default function PostulantesConvocatoriaScreen() {
                     </Text>
                   </View>
 
-                  <Button 
-                    label="Ver Detalles y Archivos" 
+                  <Button
+                    label="Ver Detalles y Archivos"
                     variant="outline"
                     onPress={() => router.push(`/(tabs)/postulaciones/${post.id_postulacion}` as any)}
                   />

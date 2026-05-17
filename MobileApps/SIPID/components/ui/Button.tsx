@@ -31,17 +31,17 @@ export function Button({
   }[variant];
 
   const textClasses = {
-    primary: 'text-white font-bold text-base tracking-wide',
-    outline: 'text-zinc-50 font-semibold text-base tracking-wide',
+    primary: 'text-white font-medium text-base tracking-wide',
+    outline: 'text-zinc-50 font-medium text-base tracking-wide',
     ghost: 'text-zinc-400 font-medium text-base tracking-wide',
-    glass: 'text-purple-400 font-semibold text-base tracking-wide',
+    glass: 'text-purple-400 font-medium text-base tracking-wide',
   }[variant];
 
   return (
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
-      className={`${containerClasses} ${isDisabled ? 'opacity-40' : ''}`}
+      className={`p-2 ${containerClasses} ${isDisabled ? 'opacity-40' : ''}`}
       style={({ pressed }) => ({
         transform: [{ scale: pressed && !isDisabled ? 0.98 : 1 }],
       })}

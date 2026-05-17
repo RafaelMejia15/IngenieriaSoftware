@@ -1,16 +1,35 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView, ScrollView, Text, View, ActivityIndicator, Linking } from 'react-native';
-import { usePostulacionDetalleAdminQuery } from '@/features/postulaciones/api/postulacionesHooks';
+import { SafeAreaView, ScrollView, Text, View, ActivityIndicator, Linking, TextInput } from 'react-native';
+import { usePostulacionDetalleAdminQuery, useCambiarEstadoAdminMutation } from '@/features/postulaciones/api/postulacionesHooks';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Header } from '@/components/ui/Header';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useState } from 'react';
 
 export default function PostulacionDetalleAdminScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { data: post, isLoading, isError } = usePostulacionDetalleAdminQuery(id as string);
+  const { mutateAsync: cambiarEstado, isPending: isChangingState } = useCambiarEstadoAdminMutation();
+  const [actionType, setActionType] = useState<'OBSERVACIONES' | 'DESESTIMAR' | null>(null);
+  const [motivo, setMotivo] = useState('');
+
+  const handleAction = async (estado: string) => {
+    if ((estado === 'CON_OBSERVACIONES' || estado === 'DESESTIMADO') && !motivo.trim()) {
+      alert('Debes ingresar un motivo o justificación');
+      return;
+    }
+    try {
+      await cambiarEstado({ idPostulacion: id as string, estado, motivo: motivo.trim() || undefined });
+      alert('Estado actualizado con éxito');
+      setActionType(null);
+      setMotivo('');
+    } catch (err: any) {
+      alert('Error al actualizar estado: ' + (err.response?.data?.detail || ''));
+    }
+  };
 
   if (isLoading) {
     return (
@@ -34,7 +53,7 @@ export default function PostulacionDetalleAdminScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950">
+    <SafeAreaView style={{ flex: 1 }} className="bg-zinc-950">
       <Header title="Detalle de Aspirante" showHub={true} />
       <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
         <View className="p-4 md:p-8 max-w-4xl w-full mx-auto flex-grow">
@@ -82,6 +101,76 @@ export default function PostulacionDetalleAdminScreen() {
               ))
             )}
           </View>
+
+          {post.estado === 'ENVIADO' && (
+            <View className="mt-8 border-t border-zinc-800 pt-6">
+              <Text className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-4">Acciones de Revisión</Text>
+              <Button
+                label="Iniciar Revisión de Expediente"
+                onPress={() => handleAction('EN_REVISION')}
+                loading={isChangingState}
+              />
+            </View>
+          )}
+
+          {post.estado === 'EN_REVISION' && (
+            <View className="mt-8 border-t border-zinc-800 pt-6 pb-8">
+              <Text className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-4">Dictamen de Revisión</Text>
+
+              {!actionType ? (
+                <View className="flex-col gap-3">
+                  <Button
+                    label="Aceptar Expediente"
+                    onPress={() => handleAction('ACEPTADO')}
+                    loading={isChangingState}
+                  />
+                  <Button
+                    label="Devolver con Observaciones"
+                    onPress={() => setActionType('OBSERVACIONES')}
+                    variant="outline"
+                  />
+                  <Button
+                    label="Desestimar Postulación"
+                    onPress={() => setActionType('DESESTIMAR')}
+                    variant="outline"
+                  />
+                </View>
+              ) : (
+                <View className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl">
+                  <Text className="text-zinc-50 font-bold mb-2">
+                    {actionType === 'OBSERVACIONES' ? 'Ingresa las observaciones:' : 'Ingresa el motivo de desestimación:'}
+                  </Text>
+                  <TextInput
+                    className="bg-zinc-950 border border-zinc-800 text-zinc-100 p-4 rounded-xl mb-4 text-base"
+                    multiline
+                    numberOfLines={4}
+                    placeholder="Escribe aquí los detalles..."
+                    placeholderTextColor="#52525b"
+                    value={motivo}
+                    onChangeText={setMotivo}
+                    editable={!isChangingState}
+                  />
+                  <View className="flex-row gap-3">
+                    <View className="flex-1">
+                      <Button
+                        label="Cancelar"
+                        onPress={() => { setActionType(null); setMotivo(''); }}
+                        variant="outline"
+                        disabled={isChangingState}
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Button
+                        label="Confirmar"
+                        onPress={() => handleAction(actionType === 'OBSERVACIONES' ? 'CON_OBSERVACIONES' : 'DESESTIMADO')}
+                        loading={isChangingState}
+                      />
+                    </View>
+                  </View>
+                </View>
+              )}
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
