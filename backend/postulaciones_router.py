@@ -1,3 +1,4 @@
+import hashlib
 from datetime import datetime, timezone
 from io import BytesIO
 from uuid import UUID
@@ -9,8 +10,18 @@ from sqlalchemy.orm import Session, selectinload
 
 from database import get_db
 from deps import CurrentUser, require_admin, require_usuario_aspirante
+from expediente_service import (
+    ESTADOS_EXPEDIENTE_ASPIRANTE_ENVIO,
+    TransicionInvalidaError,
+    calcular_progreso_obligatorios,
+    cerrar_convocatorias_vencidas,
+    convocatoria_acepta_expedientes,
+    expediente_permite_edicion,
+    hash_duplicado_en_expediente,
+    requisitos_obligatorios_faltantes,
+    transicion_expediente,
+)
 from models import (
-    CatalogoRequisito,
     Convocatoria,
     ConvocatoriaRequisito,
     Postulacion,
@@ -19,39 +30,33 @@ from models import (
 )
 from s3_storage import (
     ALLOWED_CONTENT_TYPES,
+    build_object_key,
     delete_object,
     get_s3_bucket,
     get_upload_max_bytes,
     presigned_get_url,
     sanitize_filename,
     upload_fileobj,
-    build_object_key,
 )
 from vacantes_router import _convocatoria_from_model
 from vacantes_schemas import (
-    AdminPostulacionDetalleResponse,
-    AdminPostulacionesDeConvocatoriaResponse,
     AdminDocumentoDetalle,
-    DocumentoSubidoResponse,
+    AdminPostulacionDetalleResponse,
     AdminPostulacionListItem,
+    AdminPostulacionesDeConvocatoriaResponse,
+    CambiarEstadoPostulacionRequest,
+    CambiarEstadoPostulacionResponse,
+    DocumentoSubidoResponse,
+    EnviarPostulacionResponse,
     MisPostulacionesItemResponse,
     MisPostulacionesListResponse,
     PostularResponse,
     PostulacionUsuarioResumen,
     RequisitoDocumentoEstado,
+    RequisitoFaltanteItem,
 )
 
-
 router = APIRouter(tags=["postulaciones"])
-
-
-def _convocatoria_es_vigente(cv: Convocatoria) -> bool:
-    now = datetime.now(timezone.utc)
-    return (
-        cv.estado == "ABIERTA"
-        and cv.fecha_inicio <= now
-        and cv.fecha_fin >= now
-    )
 
 
 def _requisito_permite_para_convocatoria(db: Session, id_cv: UUID, id_req: UUID) -> bool:
@@ -66,60 +71,10 @@ def _requisito_permite_para_convocatoria(db: Session, id_cv: UUID, id_req: UUID)
     )
 
 
-@router.post(
-    "/aspirante/convocatorias/{id_convocatoria}/postular",
-    response_model=PostularResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-def crear_postulacion(
-    id_convocatoria: UUID,
-    db: Session = Depends(get_db),
-    user: CurrentUser = Depends(require_usuario_aspirante),
-):
-    cv = db.get(Convocatoria, id_convocatoria)
-    if not cv:
-        raise HTTPException(status_code=404, detail="Convocatoria no encontrada")
-    if not _convocatoria_es_vigente(cv):
-        raise HTTPException(
-            status_code=400,
-            detail="La convocatoria no está abierta para postulaciones",
-        )
-    existe = db.scalar(
-        select(Postulacion).where(
-            Postulacion.id_convocatoria == id_convocatoria,
-            Postulacion.id_usuario == user.id_usuario,
-        )
-    )
-    if existe:
-        raise HTTPException(status_code=409, detail="Ya postulaste a esta convocatoria")
-    post = Postulacion(
-        id_convocatoria=id_convocatoria,
-        id_usuario=user.id_usuario,
-        estado="RECIBIDA",
-    )
-    db.add(post)
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=409, detail="Postulación duplicada")
-    db.refresh(post)
-    return PostularResponse(
-        id_postulacion=post.id_postulacion,
-        estado=post.estado,
-        id_convocatoria=post.id_convocatoria,
-    )
-
-
-def _normalize_content_type(ct: str | None) -> str | None:
-    if not ct:
-        return None
-    return ct.split(";")[0].strip().lower()
-
-
 def _mis_item_from_postulacion(p: Postulacion) -> MisPostulacionesItemResponse:
     c = p.convocatoria
     by_req = {d.id_requisito: d for d in p.documentos}
+    progreso = calcular_progreso_obligatorios(c, p.documentos)
     reqs: list[RequisitoDocumentoEstado] = []
     for cr in sorted(c.requisitos_vinculo, key=lambda x: x.requisito.codigo):
         r = cr.requisito
@@ -142,11 +97,166 @@ def _mis_item_from_postulacion(p: Postulacion) -> MisPostulacionesItemResponse:
         id_postulacion=p.id_postulacion,
         estado=p.estado,
         creada_en=p.creada_en,
+        enviada_en=p.enviada_en,
         convocatoria=_convocatoria_from_model(c),
         requisitos=reqs,
         documentos_completos=completos,
         documentos_total=total,
+        documentos_obligatorios_completos=progreso.completos,
+        documentos_obligatorios_total=progreso.total,
+        progreso_porcentaje=progreso.porcentaje,
     )
+
+
+def _admin_list_item(
+    post: Postulacion,
+    correo: str,
+) -> AdminPostulacionListItem:
+    progreso = calcular_progreso_obligatorios(post.convocatoria, post.documentos)
+    total_reqs = len(post.convocatoria.requisitos_vinculo)
+    completos = len(post.documentos)
+    return AdminPostulacionListItem(
+        id_postulacion=post.id_postulacion,
+        estado=post.estado,
+        creada_en=post.creada_en,
+        enviada_en=post.enviada_en,
+        usuario=PostulacionUsuarioResumen(
+            id_usuario=post.id_usuario,
+            correo=correo,
+        ),
+        documentos_completos=min(completos, total_reqs),
+        documentos_total=total_reqs,
+        documentos_obligatorios_completos=progreso.completos,
+        documentos_obligatorios_total=progreso.total,
+        progreso_porcentaje=progreso.porcentaje,
+    )
+
+
+@router.post(
+    "/aspirante/convocatorias/{id_convocatoria}/postular",
+    response_model=PostularResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def crear_postulacion(
+    id_convocatoria: UUID,
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(require_usuario_aspirante),
+):
+    cerrar_convocatorias_vencidas(db)
+    cv = db.get(Convocatoria, id_convocatoria)
+    if not cv:
+        raise HTTPException(status_code=404, detail="Convocatoria no encontrada")
+    if not convocatoria_acepta_expedientes(cv):
+        raise HTTPException(
+            status_code=400,
+            detail="La convocatoria no está abierta para postulaciones",
+        )
+    existe = db.scalar(
+        select(Postulacion).where(
+            Postulacion.id_convocatoria == id_convocatoria,
+            Postulacion.id_usuario == user.id_usuario,
+        )
+    )
+    if existe:
+        raise HTTPException(status_code=409, detail="Ya postulaste a esta convocatoria")
+    post = Postulacion(
+        id_convocatoria=id_convocatoria,
+        id_usuario=user.id_usuario,
+        estado="EN_INTEGRACION",
+    )
+    db.add(post)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Postulación duplicada")
+    db.refresh(post)
+    return PostularResponse(
+        id_postulacion=post.id_postulacion,
+        estado=post.estado,
+        id_convocatoria=post.id_convocatoria,
+    )
+
+
+@router.post(
+    "/aspirante/postulaciones/{id_postulacion}/enviar",
+    response_model=EnviarPostulacionResponse,
+)
+def enviar_postulacion(
+    id_postulacion: UUID,
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(require_usuario_aspirante),
+):
+    cerrar_convocatorias_vencidas(db)
+    post = db.scalar(
+        select(Postulacion)
+        .where(Postulacion.id_postulacion == id_postulacion)
+        .options(
+            selectinload(Postulacion.convocatoria).selectinload(
+                Convocatoria.requisitos_vinculo
+            ).selectinload(ConvocatoriaRequisito.requisito),
+            selectinload(Postulacion.documentos),
+        )
+    )
+    if not post or post.id_usuario != user.id_usuario:
+        raise HTTPException(status_code=404, detail="Postulación no encontrada")
+
+    cv = post.convocatoria
+    if not convocatoria_acepta_expedientes(cv):
+        raise HTTPException(
+            status_code=400,
+            detail="La convocatoria no está abierta para envío de expedientes",
+        )
+    if post.estado not in ESTADOS_EXPEDIENTE_ASPIRANTE_ENVIO:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No puedes enviar el expediente en estado {post.estado}",
+        )
+
+    faltantes = requisitos_obligatorios_faltantes(cv, post.documentos)
+    if faltantes:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Faltan documentos obligatorios para enviar el expediente",
+                "requisitos_faltantes": [
+                    RequisitoFaltanteItem(
+                        id_requisito=f.id_requisito,
+                        codigo=f.codigo,
+                        nombre=f.nombre,
+                    ).model_dump()
+                    for f in faltantes
+                ],
+            },
+        )
+
+    try:
+        transicion_expediente(
+            db,
+            post,
+            "ENVIADO",
+            user.id_usuario,
+            es_admin=False,
+        )
+        db.commit()
+    except TransicionInvalidaError as e:
+        db.rollback()
+        raise HTTPException(status_code=409, detail=e.mensaje) from e
+
+    db.refresh(post)
+    progreso = calcular_progreso_obligatorios(cv, post.documentos)
+    return EnviarPostulacionResponse(
+        id_postulacion=post.id_postulacion,
+        estado=post.estado,
+        enviada_en=post.enviada_en,
+        progreso_porcentaje=progreso.porcentaje,
+    )
+
+
+def _normalize_content_type(ct: str | None) -> str | None:
+    if not ct:
+        return None
+    return ct.split(";")[0].strip().lower()
 
 
 @router.get(
@@ -157,6 +267,7 @@ def mis_postulaciones(
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(require_usuario_aspirante),
 ):
+    cerrar_convocatorias_vencidas(db)
     posts = db.scalars(
         select(Postulacion)
         .where(Postulacion.id_usuario == user.id_usuario)
@@ -184,21 +295,24 @@ async def subir_documento_postulacion(
     db: Session = Depends(get_db),
     user: CurrentUser = Depends(require_usuario_aspirante),
 ):
-    bucket = ""
+    cerrar_convocatorias_vencidas(db)
     try:
         bucket = get_s3_bucket()
     except ValueError as e:
-        raise HTTPException(
-            status_code=503,
-            detail=str(e),
-        ) from e
+        raise HTTPException(status_code=503, detail=str(e)) from e
 
     post = db.get(Postulacion, id_postulacion)
     if not post or post.id_usuario != user.id_usuario:
         raise HTTPException(status_code=404, detail="Postulación no encontrada")
 
+    if not expediente_permite_edicion(post.estado):
+        raise HTTPException(
+            status_code=403,
+            detail=f"No puedes modificar documentos en estado {post.estado}",
+        )
+
     cv = db.get(Convocatoria, post.id_convocatoria)
-    if not cv or not _convocatoria_es_vigente(cv):
+    if not cv or not convocatoria_acepta_expedientes(cv):
         raise HTTPException(
             status_code=400,
             detail="No puedes cargar archivos fuera del periodo de vigencia",
@@ -222,6 +336,16 @@ async def subir_documento_postulacion(
             detail="Tipo de archivo no permitido (use PDF o imágenes JPEG/PNG)",
         )
 
+    contenido_hash = hashlib.sha256(body).hexdigest()
+    dup = hash_duplicado_en_expediente(
+        db, post.id_postulacion, contenido_hash, id_requisito
+    )
+    if dup:
+        raise HTTPException(
+            status_code=409,
+            detail="El archivo es un duplicado exacto de otro documento ya cargado en este expediente",
+        )
+
     fname = sanitize_filename(file.filename or "archivo.bin")
     key = build_object_key(post.id_postulacion, id_requisito, fname)
 
@@ -238,6 +362,7 @@ async def subir_documento_postulacion(
     except Exception as exc:
         raise HTTPException(status_code=502, detail="Error al guardar en S3") from exc
 
+    now = datetime.now(timezone.utc)
     if existing:
         delete_object(existing.s3_bucket, existing.s3_key)
         existing.s3_bucket = bucket
@@ -245,7 +370,9 @@ async def subir_documento_postulacion(
         existing.nombre_original = fname
         existing.content_type = ct
         existing.tamano_bytes = len(body)
-        existing.subido_en = datetime.now(timezone.utc)
+        existing.contenido_hash = contenido_hash
+        existing.version = existing.version + 1
+        existing.subido_en = now
         doc_row = existing
     else:
         doc_row = PostulacionDocumento(
@@ -256,6 +383,8 @@ async def subir_documento_postulacion(
             nombre_original=fname,
             content_type=ct,
             tamano_bytes=len(body),
+            contenido_hash=contenido_hash,
+            version=1,
             estado_validacion="PENDIENTE",
         )
         db.add(doc_row)
@@ -267,7 +396,56 @@ async def subir_documento_postulacion(
         nombre_original=doc_row.nombre_original,
         content_type=doc_row.content_type,
         tamano_bytes=doc_row.tamano_bytes,
+        version=doc_row.version,
     )
+
+
+@router.delete(
+    "/aspirante/postulaciones/{id_postulacion}/documentos/{id_requisito}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def eliminar_documento_postulacion(
+    id_postulacion: UUID,
+    id_requisito: UUID,
+    db: Session = Depends(get_db),
+    user: CurrentUser = Depends(require_usuario_aspirante),
+):
+    cerrar_convocatorias_vencidas(db)
+    post = db.get(Postulacion, id_postulacion)
+    if not post or post.id_usuario != user.id_usuario:
+        raise HTTPException(status_code=404, detail="Postulación no encontrada")
+
+    if not expediente_permite_edicion(post.estado):
+        raise HTTPException(
+            status_code=403,
+            detail=f"No puedes eliminar documentos en estado {post.estado}",
+        )
+
+    cv = db.get(Convocatoria, post.id_convocatoria)
+    if not cv or not convocatoria_acepta_expedientes(cv):
+        raise HTTPException(
+            status_code=400,
+            detail="No puedes eliminar archivos fuera del periodo de vigencia",
+        )
+
+    if not _requisito_permite_para_convocatoria(db, post.id_convocatoria, id_requisito):
+        raise HTTPException(
+            status_code=400,
+            detail="Este requisito no aplica a la convocatoria",
+        )
+
+    doc = db.scalar(
+        select(PostulacionDocumento).where(
+            PostulacionDocumento.id_postulacion == id_postulacion,
+            PostulacionDocumento.id_requisito == id_requisito,
+        )
+    )
+    if not doc:
+        raise HTTPException(status_code=404, detail="Documento no encontrado")
+
+    delete_object(doc.s3_bucket, doc.s3_key)
+    db.delete(doc)
+    db.commit()
 
 
 @router.get(
@@ -279,6 +457,7 @@ def listar_postulaciones_admin(
     db: Session = Depends(get_db),
     _admin: CurrentUser = Depends(require_admin),
 ):
+    cerrar_convocatorias_vencidas(db)
     cv = db.get(Convocatoria, id_convocatoria)
     if not cv:
         raise HTTPException(status_code=404, detail="Convocatoria no encontrada")
@@ -296,28 +475,15 @@ def listar_postulaciones_admin(
     ).all()
 
     user_ids = {p.id_usuario for p in posts}
-    usuarios = {}
+    usuarios: dict[UUID, str] = {}
     if user_ids:
         for u in db.scalars(select(Usuario).where(Usuario.id_usuario.in_(user_ids))).all():
             usuarios[u.id_usuario] = u.correo
 
-    total_reqs = len(cv.requisitos_vinculo)
-    items_l: list[AdminPostulacionListItem] = []
-    for post in posts:
-        completos = len(post.documentos)
-        items_l.append(
-            AdminPostulacionListItem(
-                id_postulacion=post.id_postulacion,
-                estado=post.estado,
-                creada_en=post.creada_en,
-                usuario=PostulacionUsuarioResumen(
-                    id_usuario=post.id_usuario,
-                    correo=usuarios.get(post.id_usuario, ""),
-                ),
-                documentos_completos=min(completos, total_reqs),
-                documentos_total=total_reqs,
-            )
-        )
+    items_l = [
+        _admin_list_item(post, usuarios.get(post.id_usuario, ""))
+        for post in posts
+    ]
     return AdminPostulacionesDeConvocatoriaResponse(items=items_l)
 
 
@@ -355,6 +521,7 @@ def detalle_postulacion_admin(
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
+    progreso = calcular_progreso_obligatorios(post.convocatoria, post.documentos)
     docs_by_req = {d.id_requisito: d for d in post.documentos}
     det_docs: list[AdminDocumentoDetalle] = []
     for cr in sorted(
@@ -384,9 +551,50 @@ def detalle_postulacion_admin(
         nombre_convocatoria=post.convocatoria.nombre,
         estado=post.estado,
         creada_en=post.creada_en,
+        enviada_en=post.enviada_en,
         usuario=PostulacionUsuarioResumen(
             id_usuario=usuario.id_usuario,
             correo=usuario.correo,
         ),
         documentos=det_docs,
+        documentos_obligatorios_completos=progreso.completos,
+        documentos_obligatorios_total=progreso.total,
+        progreso_porcentaje=progreso.porcentaje,
+    )
+
+
+@router.patch(
+    "/admin/postulaciones/{id_postulacion}/estado",
+    response_model=CambiarEstadoPostulacionResponse,
+)
+def cambiar_estado_postulacion_admin(
+    id_postulacion: UUID,
+    body: CambiarEstadoPostulacionRequest,
+    db: Session = Depends(get_db),
+    admin: CurrentUser = Depends(require_admin),
+):
+    post = db.get(Postulacion, id_postulacion)
+    if not post:
+        raise HTTPException(status_code=404, detail="Postulación no encontrada")
+
+    estado_anterior = post.estado
+    try:
+        transicion_expediente(
+            db,
+            post,
+            body.estado,
+            admin.id_usuario,
+            es_admin=True,
+            motivo=body.motivo,
+        )
+        db.commit()
+    except TransicionInvalidaError as e:
+        db.rollback()
+        raise HTTPException(status_code=409, detail=e.mensaje) from e
+
+    db.refresh(post)
+    return CambiarEstadoPostulacionResponse(
+        id_postulacion=post.id_postulacion,
+        estado=post.estado,
+        estado_anterior=estado_anterior,
     )

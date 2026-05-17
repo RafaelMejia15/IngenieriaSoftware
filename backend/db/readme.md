@@ -98,3 +98,25 @@ Script: [`script_sprint4_postulaciones_s3.sql`](script_sprint4_postulaciones_s3.
 * **`postulacion_documento`**: A lo más un archivo por `(id_postulacion, id_requisito)`; metadatos de trazabilidad (`s3_bucket`, `s3_key`, `nombre_original`, `content_type`, `tamano_bytes`); opcionalmente `estado_validacion` (por defecto `PENDIENTE` en uso actual). Solo se admiten `id_requisito` ligados por `convocatoria_requisito` a la convocatoría de esa postulación.
 
 Almacenamiento de binarios en **AWS S3** mediante `boto3`. Variables típicas: `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (u otro método de credenciales en AWS), `S3_BUCKET`, `S3_PREFIX` opcional y límite de tamaño (`UPLOAD_MAX_BYTES` / configuración aplicación). Rutas REST: aspirante puede postular, subir multipart por `id_requisito`, consultar convocatorias con `ya_postulo`/`id_postulacion` y `mis-postulaciones`; admin lista postulaciones por convocatoria y detalle con descarga mediante URL prefirmada para documentos subidos.
+
+### **Sprint 5: Ciclo de expediente (RF-06 a RF-13)**
+
+Script: [`script_sprint5_expediente.sql`](script_sprint5_expediente.sql). Complementa Sprint 4.
+
+**Convocatoria (RF-06):** estado **`INACTIVA`** cuando `fecha_fin` del servidor supera el fin configurado (cierre lazy en lecturas/mutaciones de API). Las vacantes inactivas no admiten nuevos expedientes ni cargas.
+
+**Expediente (`postulacion`) – breaking change de estados:**
+
+| Código | Significado |
+|--------|-------------|
+| `EN_INTEGRACION` | Aspirante integra documentos (estado inicial al `POST .../postular`) |
+| `ENVIADO` | Envío formal tras 100% obligatorios (`POST .../postulaciones/{id}/enviar`) |
+| `EN_REVISION` | En revisión por administración |
+| `CON_OBSERVACIONES` | Observaciones; aspirante puede corregir y reenviar |
+| `ACEPTADO` / `DESESTIMADO` | Resolución final |
+
+Columna `enviada_en` al pasar a `ENVIADO`. Tabla `postulacion_estado_historial` audita transiciones admin.
+
+**Documentos:** `contenido_hash` (SHA-256), `version` (incremento en reemplazo). RF-09 rechaza duplicado exacto entre requisitos del mismo expediente. RF-10: upload/delete solo en `EN_INTEGRACION` o `CON_OBSERVACIONES`.
+
+**API nuevas o relevantes:** `POST .../enviar`, `DELETE .../documentos/{id_requisito}`, `PATCH /admin/postulaciones/{id}/estado`. Respuestas de listado incluyen `progreso_porcentaje` (solo requisitos **obligatorios**).

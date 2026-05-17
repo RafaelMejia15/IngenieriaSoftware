@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from deps import CurrentUser, require_admin, require_catalogo_reader, require_usuario_aspirante
 from database import get_db
+from expediente_service import cerrar_convocatorias_vencidas
 from models import CatalogoRequisito, Convocatoria, ConvocatoriaRequisito, Postulacion
 from vacantes_schemas import (
     CatalogoRequisitoResponse,
@@ -102,6 +103,7 @@ def listar_convocatorias_admin(
             ConvocatoriaRequisito.requisito
         ),
     )
+    cerrar_convocatorias_vencidas(db)
     if solo_activas:
         stmt = stmt.where(_active_filters())
     if q and q.strip():
@@ -139,6 +141,7 @@ def buscar_convocatorias_activas(
         description="Texto para buscar en el nombre de la vacante (ILIKE)",
     ),
 ):
+    cerrar_convocatorias_vencidas(db)
     stmt = (
         select(Convocatoria, Postulacion.id_postulacion)
         .outerjoin(

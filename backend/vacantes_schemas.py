@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -70,10 +71,14 @@ class MisPostulacionesItemResponse(BaseModel):
     id_postulacion: UUID
     estado: str
     creada_en: datetime
+    enviada_en: datetime | None = None
     convocatoria: ConvocatoriaResponse
     requisitos: list[RequisitoDocumentoEstado]
     documentos_completos: int
     documentos_total: int
+    documentos_obligatorios_completos: int
+    documentos_obligatorios_total: int
+    progreso_porcentaje: int = Field(ge=0, le=100)
 
 
 class MisPostulacionesListResponse(BaseModel):
@@ -89,9 +94,13 @@ class AdminPostulacionListItem(BaseModel):
     id_postulacion: UUID
     estado: str
     creada_en: datetime
+    enviada_en: datetime | None = None
     usuario: PostulacionUsuarioResumen
     documentos_completos: int
     documentos_total: int
+    documentos_obligatorios_completos: int
+    documentos_obligatorios_total: int
+    progreso_porcentaje: int = Field(ge=0, le=100)
 
 
 class AdminPostulacionesDeConvocatoriaResponse(BaseModel):
@@ -115,8 +124,12 @@ class AdminPostulacionDetalleResponse(BaseModel):
     nombre_convocatoria: str
     estado: str
     creada_en: datetime
+    enviada_en: datetime | None = None
     usuario: PostulacionUsuarioResumen
     documentos: list[AdminDocumentoDetalle]
+    documentos_obligatorios_completos: int
+    documentos_obligatorios_total: int
+    progreso_porcentaje: int = Field(ge=0, le=100)
 
 
 class DocumentoSubidoResponse(BaseModel):
@@ -125,3 +138,40 @@ class DocumentoSubidoResponse(BaseModel):
     nombre_original: str
     content_type: str
     tamano_bytes: int
+    version: int
+
+
+class RequisitoFaltanteItem(BaseModel):
+    id_requisito: UUID
+    codigo: str
+    nombre: str
+
+
+class EnviarPostulacionResponse(BaseModel):
+    id_postulacion: UUID
+    estado: str
+    enviada_en: datetime
+    progreso_porcentaje: int = Field(ge=0, le=100)
+
+
+EstadoExpedienteAdmin = Literal[
+    "EN_REVISION", "CON_OBSERVACIONES", "ACEPTADO", "DESESTIMADO"
+]
+
+
+class CambiarEstadoPostulacionRequest(BaseModel):
+    estado: EstadoExpedienteAdmin
+    motivo: str | None = Field(default=None, max_length=2000)
+
+
+class CambiarEstadoPostulacionResponse(BaseModel):
+    id_postulacion: UUID
+    estado: str
+    estado_anterior: str
+
+
+class PostulacionEstadoHistorialItem(BaseModel):
+    estado_anterior: str
+    estado_nuevo: str
+    creado_en: datetime
+    motivo: str | None = None

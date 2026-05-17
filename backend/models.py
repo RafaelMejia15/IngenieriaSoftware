@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, String, Text, false, func
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Integer, String, Text, false, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -138,9 +138,14 @@ class Postulacion(Base):
         ForeignKey("usuario.id_usuario", ondelete="CASCADE"),
         nullable=False,
     )
-    estado: Mapped[str] = mapped_column(String(32), nullable=False, default="RECIBIDA")
+    estado: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="EN_INTEGRACION"
+    )
     creada_en: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    enviada_en: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
     )
 
     convocatoria: Mapped[Convocatoria] = relationship(
@@ -148,6 +153,11 @@ class Postulacion(Base):
     )
     documentos: Mapped[list[PostulacionDocumento]] = relationship(
         "PostulacionDocumento",
+        back_populates="postulacion",
+        cascade="all, delete-orphan",
+    )
+    historial_estados: Mapped[list[PostulacionEstadoHistorial]] = relationship(
+        "PostulacionEstadoHistorial",
         back_populates="postulacion",
         cascade="all, delete-orphan",
     )
@@ -180,8 +190,38 @@ class PostulacionDocumento(Base):
     subido_en: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    contenido_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
 
     postulacion: Mapped[Postulacion] = relationship(
         "Postulacion", back_populates="documentos"
     )
     requisito: Mapped[CatalogoRequisito] = relationship("CatalogoRequisito")
+
+
+class PostulacionEstadoHistorial(Base):
+    __tablename__ = "postulacion_estado_historial"
+
+    id_historial: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    id_postulacion: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("postulacion.id_postulacion", ondelete="CASCADE"),
+        nullable=False,
+    )
+    estado_anterior: Mapped[str] = mapped_column(String(32), nullable=False)
+    estado_nuevo: Mapped[str] = mapped_column(String(32), nullable=False)
+    id_usuario_actor: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("usuario.id_usuario", ondelete="SET NULL"),
+        nullable=True,
+    )
+    creado_en: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    motivo: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    postulacion: Mapped[Postulacion] = relationship(
+        "Postulacion", back_populates="historial_estados"
+    )
