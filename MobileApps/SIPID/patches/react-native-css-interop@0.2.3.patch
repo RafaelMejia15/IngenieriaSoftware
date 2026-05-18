@@ -1,0 +1,28 @@
+diff --git a/dist/css-to-rn/parseDeclaration.js b/dist/css-to-rn/parseDeclaration.js
+index 59ea66e459dbf6922bcd80a6ac014408ca13c2af..9bec10da323f3e9989d7c8c7c6f804378c2983c7 100644
+--- a/dist/css-to-rn/parseDeclaration.js
++++ b/dist/css-to-rn/parseDeclaration.js
+@@ -1761,6 +1761,9 @@ function parseAspectRatio(aspectRatio) {
+         return "auto";
+     }
+     else {
++        if (!aspectRatio.ratio || aspectRatio.ratio.length < 2) {
++            return "auto";
++        }
+         if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
+             return 1;
+         }
+diff --git a/src/css-to-rn/parseDeclaration.ts b/src/css-to-rn/parseDeclaration.ts
+index bf095a5b430d24f791b8478f5b513d703bd1a02a..292f5c085e6cd6b2da0bc4c9ba94c0a71e72651f 100644
+--- a/src/css-to-rn/parseDeclaration.ts
++++ b/src/css-to-rn/parseDeclaration.ts
+@@ -2642,6 +2642,9 @@ function parseAspectRatio(
+   if (aspectRatio.auto) {
+     return "auto";
+   } else {
++    if (!aspectRatio.ratio || aspectRatio.ratio.length < 2) {
++      return "auto";
++    }
+     if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
+       return 1;
+     } else {
