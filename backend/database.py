@@ -1,5 +1,7 @@
 import os
-from sqlalchemy import create_engine
+from uuid import UUID
+
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 
@@ -20,3 +22,13 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def configurar_usuario_bitacora(db, id_usuario: UUID | str | None) -> None:
+    """Expone el usuario de la app a los triggers (SET LOCAL app.id_usuario)."""
+    if id_usuario is None:
+        return
+    db.execute(
+        text("SELECT set_config('app.id_usuario', :uid, true)"),
+        {"uid": str(id_usuario)},
+    )

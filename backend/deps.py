@@ -8,7 +8,7 @@ from jose import JWTError
 from sqlalchemy.orm import Session
 
 from auth_classes import AuthRepository
-from database import get_db
+from database import configurar_usuario_bitacora, get_db
 from security import decode_access_token
 
 http_bearer = HTTPBearer(auto_error=False)
@@ -99,6 +99,7 @@ def get_current_user(
             detail="Token inconsistente con el usuario",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    configurar_usuario_bitacora(db, uid)
     return CurrentUser(email=email, id_usuario=uid, nombre_rol=row.nombre_rol)
 
 

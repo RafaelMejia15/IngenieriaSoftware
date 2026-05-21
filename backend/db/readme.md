@@ -120,3 +120,20 @@ Columna `enviada_en` al pasar a `ENVIADO`. Tabla `postulacion_estado_historial` 
 **Documentos:** `contenido_hash` (SHA-256), `version` (incremento en reemplazo). RF-09 rechaza duplicado exacto entre requisitos del mismo expediente. RF-10: upload/delete solo en `EN_INTEGRACION` o `CON_OBSERVACIONES`.
 
 **API nuevas o relevantes:** `POST .../enviar`, `DELETE .../documentos/{id_requisito}`, `PATCH /admin/postulaciones/{id}/estado`. Respuestas de listado incluyen `progreso_porcentaje` (solo requisitos **obligatorios**).
+
+### **Bitácora por tabla (triggers)**
+
+Script: [`script_bitacora_triggers.sql`](script_bitacora_triggers.sql). Cada tabla operativa tiene su espejo `bitacora_<tabla>` con las mismas columnas de negocio más metadatos:
+
+| Campo | Descripción |
+|-------|-------------|
+| `id_bitacora` | PK del registro de auditoría |
+| `operacion` | `INSERT`, `UPDATE` o `DELETE` |
+| `registrado_en` | Marca de tiempo del evento |
+| `usuario_db` | Usuario de sesión PostgreSQL (`SESSION_USER`) |
+| `id_usuario_app` | UUID del usuario autenticado vía API (`app.id_usuario`, opcional) |
+| `registro_anterior` | JSON con la fila previa (en `UPDATE` y `DELETE`) |
+
+**Tablas auditadas:** `rol`, `usuario`, `catalogo_requisito`, `convocatoria`, `convocatoria_requisito`, `postulacion`, `postulacion_documento`, `postulacion_estado_historial`.
+
+Los triggers son `AFTER INSERT OR UPDATE OR DELETE` y **no** se aplican sobre las tablas `bitacora_*` (evita recursión). Tras ejecutar el script en PostgreSQL, las mutaciones vía API con JWT rellenan `id_usuario_app` automáticamente (`configurar_usuario_bitacora` en el backend).
