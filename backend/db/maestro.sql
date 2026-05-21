@@ -1,3 +1,15 @@
+CREATE DATABASE automecture_database
+    OWNER automecture_user
+    ENCODING 'UTF8'
+    TEMPLATE template0;
+
+-- Requiere cliente psql: el resto del script corre dentro de la BD nueva.
+\connect automecture_database
+
+-- =============================================================================
+-- Esquema y datos (schema public)
+-- =============================================================================
+
 -- Creamos la tabla 'rol' con UUID
 CREATE TABLE rol (
     id_rol UUID PRIMARY KEY DEFAULT gen_random_uuid(),

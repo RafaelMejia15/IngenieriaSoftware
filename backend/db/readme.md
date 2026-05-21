@@ -2,6 +2,17 @@
 
 Este documento describe la estructura principal de la base de datos PostgreSQL para la gestión de usuarios, roles y flujos de seguridad del sistema.
 
+## Recrear la base de datos desde cero (pruebas)
+
+El script [`maestro.sql`](maestro.sql) **borra** `automecture_database`, la **vuelve a crear** y aplica tablas, datos semilla, sprints y bitácora. Debe ejecutarse contra la BD `postgres` (no contra `automecture_database`):
+
+```bash
+docker compose cp backend/db/maestro.sql db:/tmp/maestro.sql
+docker compose exec -T db psql -U automecture_user -d postgres -f /tmp/maestro.sql
+```
+
+Usa el cliente `psql` (incluye `\connect automecture_database` tras el `CREATE DATABASE`).
+
 ## API (JWT)
 
 Tras **Sprint 3**, el endpoint `POST /login` devuelve `access_token` y `token_type: bearer`. Las rutas de vacantes y catálogo exigen el encabezado:
