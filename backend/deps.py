@@ -21,6 +21,8 @@ def _rol_key(rol: str) -> str:
         return "admin"
     if r in ("usuario", "aspirante") or r.startswith("usuario "):
         return "usuario"
+    if r in ("soporte_ti", "soporte", "soporte ti"):
+        return "soporte_ti"
     return r
 
 
@@ -126,5 +128,14 @@ def require_catalogo_reader(user: CurrentUser = Depends(get_current_user)) -> Cu
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="No autorizado para consultar el catálogo",
+        )
+    return user
+
+
+def require_soporte_o_admin(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
+    if _rol_key(user.nombre_rol) not in ("admin", "soporte_ti"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Se requiere rol administrador o soporte TI",
         )
     return user

@@ -109,6 +109,7 @@ class AdminPostulacionesDeConvocatoriaResponse(BaseModel):
 
 
 class AdminDocumentoDetalle(BaseModel):
+    id_postulacion_documento: UUID
     id_requisito: UUID
     codigo: str
     nombre: str
@@ -117,6 +118,9 @@ class AdminDocumentoDetalle(BaseModel):
     tamano_bytes: int
     subido_en: datetime
     presigned_download_url: str
+    estado_validacion: str
+    comentario_observacion: str | None = None
+    validado_en: datetime | None = None
 
 
 class AdminPostulacionDetalleResponse(BaseModel):
@@ -176,3 +180,61 @@ class PostulacionEstadoHistorialItem(BaseModel):
     estado_nuevo: str
     creado_en: datetime
     motivo: str | None = None
+
+
+DecisionValidacionDocumento = Literal["ACEPTADA", "RECHAZADA"]
+FalloDictamen = Literal["ACEPTADO", "DESESTIMADO"]
+
+
+class ValidarDocumentoRequest(BaseModel):
+    decision: DecisionValidacionDocumento
+    comentario: str | None = Field(default=None, max_length=500)
+
+
+class ValidarDocumentoResponse(BaseModel):
+    id_postulacion_documento: UUID
+    estado_validacion: str
+    comentario_observacion: str | None = None
+    validado_en: datetime
+
+
+class ExpedienteHistorialItem(BaseModel):
+    tipo: Literal["CAMBIO_ESTADO", "VALIDACION_DOCUMENTO"]
+    creado_en: datetime
+    estado_anterior: str
+    estado_nuevo: str
+    comentario: str | None = None
+    actor_correo: str | None = None
+    codigo_requisito: str | None = None
+    nombre_requisito: str | None = None
+
+
+class ExpedienteHistorialResponse(BaseModel):
+    items: list[ExpedienteHistorialItem]
+
+
+class DictamenFinalRequest(BaseModel):
+    fallo: FalloDictamen
+    motivo: str | None = Field(default=None, max_length=2000)
+
+
+class DictamenFinalResponse(BaseModel):
+    id_postulacion: UUID
+    estado: str
+    cerrada_en: datetime
+
+
+class AuditoriaEventoItem(BaseModel):
+    id_evento: UUID
+    id_usuario: UUID | None
+    accion: str
+    registrado_en: datetime
+    ip: str | None
+    detalle: dict | None = None
+
+
+class AuditoriaListResponse(BaseModel):
+    items: list[AuditoriaEventoItem]
+    total: int
+    limit: int
+    offset: int

@@ -13,6 +13,7 @@ from models import Convocatoria, Postulacion, PostulacionDocumento, PostulacionE
 
 ESTADOS_EXPEDIENTE_ASPIRANTE_ENVIO = frozenset({"EN_INTEGRACION", "CON_OBSERVACIONES"})
 ESTADOS_EXPEDIENTE_EDICION = frozenset({"EN_INTEGRACION", "CON_OBSERVACIONES"})
+ESTADOS_EXPEDIENTE_CERRADO = frozenset({"ACEPTADO", "DESESTIMADO"})
 
 TRANSICIONES_ASPIRANTE: dict[str, frozenset[str]] = {
     "EN_INTEGRACION": frozenset({"ENVIADO"}),
@@ -74,6 +75,10 @@ def expediente_permite_edicion(estado: str) -> bool:
     return estado in ESTADOS_EXPEDIENTE_EDICION
 
 
+def expediente_esta_cerrado(estado: str) -> bool:
+    return estado in ESTADOS_EXPEDIENTE_CERRADO
+
+
 def _docs_por_requisito(documentos: list[PostulacionDocumento]) -> dict[UUID, PostulacionDocumento]:
     return {d.id_requisito: d for d in documentos}
 
@@ -131,6 +136,8 @@ def transicion_expediente(
     motivo: str | None = None,
 ) -> None:
     """RF-13: aplica transición válida y registra historial."""
+    if expediente_esta_cerrado(post.estado):
+        raise TransicionInvalidaError("El expediente está cerrado y no admite cambios")
     if post.estado == estado_nuevo:
         raise TransicionInvalidaError("El expediente ya está en ese estado")
     if not _transicion_permitida(post.estado, estado_nuevo, es_admin):
@@ -140,8 +147,11 @@ def transicion_expediente(
 
     estado_anterior = post.estado
     post.estado = estado_nuevo
+    now = datetime.now(timezone.utc)
     if estado_nuevo == "ENVIADO":
-        post.enviada_en = datetime.now(timezone.utc)
+        post.enviada_en = now
+    if estado_nuevo in ESTADOS_EXPEDIENTE_CERRADO:
+        post.cerrada_en = now
 
     db.add(
         PostulacionEstadoHistorial(

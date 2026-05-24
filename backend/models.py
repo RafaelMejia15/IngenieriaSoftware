@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Integer, String, Text, false, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -147,6 +147,9 @@ class Postulacion(Base):
     enviada_en: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    cerrada_en: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     convocatoria: Mapped[Convocatoria] = relationship(
         "Convocatoria", back_populates="postulaciones"
@@ -192,11 +195,27 @@ class PostulacionDocumento(Base):
     )
     contenido_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    comentario_observacion: Mapped[str | None] = mapped_column(Text, nullable=True)
+    validado_en: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    id_usuario_validador: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("usuario.id_usuario", ondelete="SET NULL"),
+        nullable=True,
+    )
 
     postulacion: Mapped[Postulacion] = relationship(
         "Postulacion", back_populates="documentos"
     )
     requisito: Mapped[CatalogoRequisito] = relationship("CatalogoRequisito")
+    historial_validaciones: Mapped[list[PostulacionDocumentoValidacionHistorial]] = (
+        relationship(
+            "PostulacionDocumentoValidacionHistorial",
+            back_populates="documento",
+            cascade="all, delete-orphan",
+        )
+    )
 
 
 class PostulacionEstadoHistorial(Base):
@@ -225,3 +244,50 @@ class PostulacionEstadoHistorial(Base):
     postulacion: Mapped[Postulacion] = relationship(
         "Postulacion", back_populates="historial_estados"
     )
+
+
+class PostulacionDocumentoValidacionHistorial(Base):
+    __tablename__ = "postulacion_documento_validacion_historial"
+
+    id_historial: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    id_postulacion_documento: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("postulacion_documento.id_postulacion_documento", ondelete="CASCADE"),
+        nullable=False,
+    )
+    estado_anterior: Mapped[str] = mapped_column(String(32), nullable=False)
+    estado_nuevo: Mapped[str] = mapped_column(String(32), nullable=False)
+    comentario: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    id_usuario_actor: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("usuario.id_usuario", ondelete="SET NULL"),
+        nullable=True,
+    )
+    creado_en: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    documento: Mapped[PostulacionDocumento] = relationship(
+        "PostulacionDocumento", back_populates="historial_validaciones"
+    )
+
+
+class AuditoriaEvento(Base):
+    __tablename__ = "auditoria_evento"
+
+    id_evento: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    id_usuario: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("usuario.id_usuario", ondelete="SET NULL"),
+        nullable=True,
+    )
+    accion: Mapped[str] = mapped_column(String(64), nullable=False)
+    registrado_en: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    ip: Mapped[str | None] = mapped_column(String(45), nullable=True)
+    detalle: Mapped[dict | None] = mapped_column(JSONB, nullable=True)

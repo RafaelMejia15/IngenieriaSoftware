@@ -1,8 +1,14 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 
 from auth_classes import AuthService
+from auditoria_service import (
+    ACCION_LOGIN,
+    ACCION_REGISTRO_CUENTA,
+    obtener_ip_cliente,
+    registrar_auditoria,
+)
 from cors_and_cookies import set_auth_access_cookie
 from database import get_db
 from email_service import (
@@ -29,7 +35,7 @@ router = APIRouter()
         "En DevTools, revísala bajo ese host del API (no solo bajo CloudFront)."
     ),
 )
-async def login(request: LoginRequest, db: Session = Depends(get_db)):
+async def login(request: LoginRequest, http_request: Request, db: Session = Depends(get_db)):
     auth_service = AuthService(db)
     user_data = auth_service.authenticate_user(
         request.email, request.password, db
@@ -38,6 +44,13 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         email=request.email,
         id_usuario=user_data.id_usuario,
         rol=user_data.nombre_rol,
+    )
+    registrar_auditoria(
+        db,
+        id_usuario=user_data.id_usuario,
+        accion=ACCION_LOGIN,
+        ip=obtener_ip_cliente(http_request),
+        detalle={"correo": request.email},
     )
     response = JSONResponse(
         content={
@@ -54,12 +67,20 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
 @router.post("/register")
 async def register(
     request: RegisterRequest,
+    http_request: Request,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     auth_service = AuthService(db)
     user_data, verify_token = auth_service.register_user(
         request.email, request.password, request.rol, db
+    )
+    registrar_auditoria(
+        db,
+        id_usuario=user_data.id_usuario,
+        accion=ACCION_REGISTRO_CUENTA,
+        ip=obtener_ip_cliente(http_request),
+        detalle={"correo": request.email, "rol": request.rol},
     )
     link = get_verification_link(verify_token)
     background_tasks.add_task(

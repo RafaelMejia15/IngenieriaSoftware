@@ -148,3 +148,18 @@ Script: [`script_bitacora_triggers.sql`](script_bitacora_triggers.sql). Cada tab
 **Tablas auditadas:** `rol`, `usuario`, `catalogo_requisito`, `convocatoria`, `convocatoria_requisito`, `postulacion`, `postulacion_documento`, `postulacion_estado_historial`.
 
 Los triggers son `AFTER INSERT OR UPDATE OR DELETE` y **no** se aplican sobre las tablas `bitacora_*` (evita recursión). Tras ejecutar el script en PostgreSQL, las mutaciones vía API con JWT rellenan `id_usuario_app` automáticamente (`configurar_usuario_bitacora` en el backend).
+
+### **Sprint 6: Cierre (RF-14 a RF-18)**
+
+Script: [`script_sprint6_cierre.sql`](script_sprint6_cierre.sql).
+
+| RF | Descripción |
+|----|-------------|
+| RF-14 | Email al aspirante en cada cambio de estado (`send_expediente_estado_email`, BackgroundTasks) |
+| RF-15 | `PATCH .../documentos/{id}/validacion` — aprobar/rechazar; comentario obligatorio al rechazar (máx. 500) |
+| RF-16 | `GET .../historial` — timeline unificado (estados + validaciones documentales) |
+| RF-17 | `POST .../dictamen` — ACEPTADO/DESESTIMADO; `cerrada_en`; bloqueo permanente |
+| RF-18 export | `GET .../export.csv` y `GET .../export.zip` |
+| RF-18 auditoría | Tabla `auditoria_evento`; `GET /soporte/auditoria` (roles `admin` o `soporte_ti`) |
+
+Rol **`soporte_ti`** y usuario de prueba `soporte@soporte.com` (misma contraseña seed que admin en maestro). La auditoría de aplicación es independiente de las tablas `bitacora_*` por triggers.

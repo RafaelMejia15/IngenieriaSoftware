@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+from io import BytesIO
 from typing import BinaryIO
 
 import boto3
@@ -82,3 +83,9 @@ def presigned_get_url(bucket: str, key: str, expires_in: int = 900) -> str:
         Params={"Bucket": bucket, "Key": key},
         ExpiresIn=expires_in,
     )
+
+
+def download_object_bytes(bucket: str, key: str) -> bytes:
+    buf = BytesIO()
+    s3_client().download_fileobj(bucket, key, buf)
+    return buf.getvalue()
