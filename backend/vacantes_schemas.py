@@ -149,7 +149,7 @@ class DocumentoSubidoResponse(BaseModel):
 
 
 class RequisitoFaltanteItem(BaseModel):
-    id_requisito: UUID
+    id_requisito: str
     codigo: str
     nombre: str
 
