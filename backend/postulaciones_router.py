@@ -352,7 +352,7 @@ def enviar_postulacion(
                 "message": "Faltan documentos obligatorios para enviar el expediente",
                 "requisitos_faltantes": [
                     RequisitoFaltanteItem(
-                        id_requisito=f.id_requisito,
+                        id_requisito=str(f.id_requisito),
                         codigo=f.codigo,
                         nombre=f.nombre,
                     ).model_dump()
