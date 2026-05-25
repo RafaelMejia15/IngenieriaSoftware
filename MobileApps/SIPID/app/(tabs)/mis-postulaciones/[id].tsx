@@ -229,10 +229,32 @@ export default function MisPostulacionesDetailScreen() {
                     {req.codigo} · {req.obligatorio ? 'Obligatorio' : 'Opcional'}
                   </Text>
                 </View>
+                {req.documento_subido && req.estado_validacion && (
+                  <Badge
+                    label={req.estado_validacion}
+                    variant={
+                      (req.estado_validacion === 'APROBADA' || req.estado_validacion === 'ACEPTADA')
+                        ? 'success'
+                        : req.estado_validacion === 'RECHAZADA'
+                        ? 'error'
+                        : 'info'
+                    }
+                  />
+                )}
               </View>
               {renderUploadButton(req)}
+              {req.documento_subido && req.estado_validacion === 'RECHAZADA' && req.comentario_observacion && (
+                <View className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl mt-4 flex-row items-start">
+                  <AntDesign name="exclamationcircleo" size={16} color="#ef4444" style={{ marginTop: 2, marginRight: 8 }} />
+                  <View className="flex-1">
+                    <Text className="text-red-400 font-bold text-xs uppercase tracking-wider">Observación del Administrador:</Text>
+                    <Text className="text-red-300 text-sm mt-1 leading-relaxed">{req.comentario_observacion}</Text>
+                  </View>
+                </View>
+              )}
             </Card>
           ))}
+
 
           {errorEnvio.length > 0 && (
             <View className="mb-6 bg-red-500/10 border border-red-500/30 p-4 rounded-xl">

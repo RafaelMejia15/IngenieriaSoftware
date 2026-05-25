@@ -208,6 +208,8 @@ def _mis_item_from_postulacion(p: Postulacion) -> MisPostulacionesItemResponse:
                 nombre_archivo_subido=doc.nombre_original if doc else None,
                 content_type_subido=doc.content_type if doc else None,
                 subido_en=doc.subido_en if doc else None,
+                estado_validacion=doc.estado_validacion if doc else None,
+                comentario_observacion=doc.comentario_observacion if doc else None,
             )
         )
     total = len(reqs)

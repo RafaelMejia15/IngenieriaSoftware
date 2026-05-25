@@ -111,6 +111,28 @@ export default function HubIndex() {
                                 </Pressable>
                             )}
 
+                            {/* Tarjeta: Bitácora de Auditoría (Soporte TI y Admin) */}
+                            {(rol === 'soporte_ti' || rol === 'admin') && (
+                                <Pressable
+                                    onPress={() => router.push('/(tabs)/soporte' as any)}
+                                    className="w-full md:w-[48%] bg-zinc-900 border border-zinc-800 rounded-3xl p-6 hover:border-amber-500/30 hover:bg-zinc-800/80 transition-all active:bg-zinc-800"
+                                >
+                                    <View className="w-12 h-12 bg-amber-500/15 border border-amber-500/30 rounded-2xl items-center justify-center mb-4">
+                                        <AntDesign name="database" size={24} color="#fbbf24" />
+                                    </View>
+                                    <Text className="text-xl font-semibold text-zinc-50 mb-2 tracking-tight">
+                                        Bitácora de Auditoría
+                                    </Text>
+                                    <Text className="text-sm text-zinc-400 leading-relaxed">
+                                        Monitorea eventos de seguridad y auditoría crítica del sistema, incluyendo login, creación de cuentas y validaciones.
+                                    </Text>
+                                    <View className="mt-4 flex-row items-center">
+                                        <Text className="text-xs font-bold text-amber-400 uppercase tracking-widest">Inspeccionar Bitácora →</Text>
+                                    </View>
+                                </Pressable>
+                            )}
+
+
                         </View>
 
                     </View>

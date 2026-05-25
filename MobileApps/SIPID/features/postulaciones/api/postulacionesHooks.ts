@@ -8,6 +8,10 @@ import {
   eliminarDocumentoPostulacion,
   enviarPostulacion,
   cambiarEstadoPostulacionAdmin,
+  validarDocumentoAdmin,
+  getExpedienteHistorial,
+  emitirDictamenFinal,
+  getAuditoriaLog,
 } from './api';
 
 export const usePostularMutation = () => {
@@ -83,6 +87,53 @@ export const useCambiarEstadoAdminMutation = () => {
     mutationFn: cambiarEstadoPostulacionAdmin,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['postulacion-detalle-admin', variables.idPostulacion] });
+      queryClient.invalidateQueries({ queryKey: ['expediente-historial', variables.idPostulacion] });
     },
   });
 };
+
+export const useValidarDocumentoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: validarDocumentoAdmin,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['postulacion-detalle-admin', variables.idPostulacion] });
+      queryClient.invalidateQueries({ queryKey: ['expediente-historial', variables.idPostulacion] });
+    },
+  });
+};
+
+export const useExpedienteHistorialQuery = (idPostulacion: string, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['expediente-historial', idPostulacion],
+    queryFn: () => getExpedienteHistorial(idPostulacion),
+    enabled,
+  });
+};
+
+export const useEmitirDictamenFinalMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: emitirDictamenFinal,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['postulacion-detalle-admin', variables.idPostulacion] });
+      queryClient.invalidateQueries({ queryKey: ['expediente-historial', variables.idPostulacion] });
+    },
+  });
+};
+
+export const useAuditoriaLogQuery = (params: {
+  desde?: string;
+  hasta?: string;
+  accion?: string;
+  id_usuario?: string;
+  limit?: number;
+  offset?: number;
+}, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['auditoria-log', params],
+    queryFn: () => getAuditoriaLog(params),
+    enabled,
+  });
+};
+
