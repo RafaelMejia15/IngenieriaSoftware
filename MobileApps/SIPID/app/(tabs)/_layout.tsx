@@ -7,6 +7,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="hub/index" options={{ title: 'Hub' }} />
       <Tabs.Screen name="convocatorias/index" options={{ title: 'Convocatorias' }} />
       <Tabs.Screen name="nueva-convocatoria/index" options={{ title: 'Nueva Convocatoria' }} />
+      <Tabs.Screen name="soporte/index" options={{ title: 'Soporte' }} />
     </Tabs>
   );
 

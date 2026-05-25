@@ -75,3 +75,55 @@ export const cambiarEstadoPostulacionAdmin = async ({
   });
   return data;
 };
+
+export const validarDocumentoAdmin = async ({
+  idPostulacion,
+  idPostulacionDocumento,
+  decision,
+  comentario,
+}: {
+  idPostulacion: string;
+  idPostulacionDocumento: string;
+  decision: "ACEPTADA" | "RECHAZADA";
+  comentario?: string;
+}) => {
+  const { data } = await apiClient.patch(
+    `/admin/postulaciones/${idPostulacion}/documentos/${idPostulacionDocumento}/validacion`,
+    { decision, comentario }
+  );
+  return data;
+};
+
+export const getExpedienteHistorial = async (idPostulacion: string) => {
+  const { data } = await apiClient.get(`/admin/postulaciones/${idPostulacion}/historial`);
+  return data;
+};
+
+export const emitirDictamenFinal = async ({
+  idPostulacion,
+  fallo,
+  motivo,
+}: {
+  idPostulacion: string;
+  fallo: "ACEPTADO" | "DESESTIMADO";
+  motivo?: string;
+}) => {
+  const { data } = await apiClient.post(
+    `/admin/postulaciones/${idPostulacion}/dictamen`,
+    { fallo, motivo }
+  );
+  return data;
+};
+
+export const getAuditoriaLog = async (params: {
+  desde?: string;
+  hasta?: string;
+  accion?: string;
+  id_usuario?: string;
+  limit?: number;
+  offset?: number;
+}) => {
+  const { data } = await apiClient.get("/soporte/auditoria", { params });
+  return data;
+};
+

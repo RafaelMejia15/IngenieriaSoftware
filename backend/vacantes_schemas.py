@@ -65,6 +65,8 @@ class RequisitoDocumentoEstado(BaseModel):
     nombre_archivo_subido: str | None = None
     content_type_subido: str | None = None
     subido_en: datetime | None = None
+    estado_validacion: str | None = None
+    comentario_observacion: str | None = None
 
 
 class MisPostulacionesItemResponse(BaseModel):
