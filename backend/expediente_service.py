@@ -110,7 +110,7 @@ def requisitos_obligatorios_faltantes(
             r = cr.requisito
             faltantes.append(
                 RequisitoFaltante(
-                    id_requisito=r.id_requisito,
+                    id_requisito=str(r.id_requisito),
                     codigo=r.codigo,
                     nombre=r.nombre,
                 )
