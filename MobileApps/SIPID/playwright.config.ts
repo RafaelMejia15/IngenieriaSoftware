@@ -16,6 +16,9 @@ export default defineConfig({
     trace: 'on',
     video: 'on',
     testIdAttribute: 'data-testid',
+    launchOptions: {
+      slowMo: 800, // Agrega 800ms de retraso a CADA acción (clic, escribir, etc)
+    },
   },
   projects: [
     {

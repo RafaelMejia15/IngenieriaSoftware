@@ -34,13 +34,11 @@ test.describe('Flujo de Iniciar Sesión (Flujo Real)', () => {
   test('debe redirigir al hub con credenciales válidas (Consultando Backend Real)', async ({ page }) => {
     await page.goto('/');
 
-    // creado en tu base de datos local
     await page.getByTestId('login-input-email').fill('admin@admin.com');
     await page.getByTestId('login-input-password').fill('1234@abc');
 
     await page.getByTestId('login-button-submit').click();
 
-    // Aserción de Cambio de URL: Esperar redirección al Hub
     await page.waitForURL('**/hub');
     expect(page.url()).toContain('/hub');
 
