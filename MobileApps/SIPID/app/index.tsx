@@ -71,6 +71,7 @@ export default function LoginScreen() {
                   error={touched.email && errors.email ? errors.email : undefined}
                   autoCapitalize="none"
                   keyboardType="email-address"
+                  testID="login-input-email"
                 />
 
                 <InputField
@@ -81,6 +82,7 @@ export default function LoginScreen() {
                   onBlur={() => setFieldTouched('password', true)}
                   error={touched.password && errors.password ? errors.password : undefined}
                   secureTextEntry
+                  testID="login-input-password"
                 />
 
                 <View className="mt-2">
@@ -88,6 +90,7 @@ export default function LoginScreen() {
                     label="Iniciar sesión"
                     onPress={() => handleSubmit()}
                     loading={isSubmitting || isPending}
+                    testID="login-button-submit"
                   />
                 </View>
               </View>
@@ -95,7 +98,7 @@ export default function LoginScreen() {
           </Formik>
 
           {errorMessage && (
-            <View className="mt-4 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <View testID="login-text-error" className="mt-4 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
               <Text className="text-red-400 text-sm text-center font-medium">{errorMessage}</Text>
             </View>
           )}

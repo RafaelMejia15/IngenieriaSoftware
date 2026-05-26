@@ -11,6 +11,7 @@ type SelectFieldProps = {
   options: SelectOption[];
   onChange: (value: string) => void;
   error?: string;
+  testID?: string;
 };
 
 export function SelectField({
@@ -19,9 +20,10 @@ export function SelectField({
   options,
   onChange,
   error,
+  testID,
 }: SelectFieldProps) {
   return (
-    <View className="gap-1">
+    <View className="gap-1" testID={testID ? `${testID}-container` : undefined}>
       {/* Micro-copy label: uppercase + tracking-widest */}
       <Text className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-1 ml-1">
         {label}
@@ -32,6 +34,7 @@ export function SelectField({
           const isSelected = value === option.value;
           return (
             <Pressable
+              testID={testID ? `${testID}-option-${option.value}` : undefined}
               key={option.value}
               onPress={() => onChange(option.value)}
               className={`
