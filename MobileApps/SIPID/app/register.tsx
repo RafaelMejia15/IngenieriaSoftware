@@ -92,6 +92,7 @@ export default function RegisterScreen() {
                   error={touched.email && errors.email ? errors.email : undefined}
                   autoCapitalize="none"
                   keyboardType="email-address"
+                  testID="register-input-email"
                 />
 
                 <InputField
@@ -102,6 +103,7 @@ export default function RegisterScreen() {
                   onBlur={() => setFieldTouched('password', true)}
                   error={touched.password && errors.password ? errors.password : undefined}
                   secureTextEntry
+                  testID="register-input-password"
                 />
 
                 <SelectField
@@ -110,6 +112,7 @@ export default function RegisterScreen() {
                   options={rolOptions}
                   onChange={(val) => setFieldValue('rol', val)}
                   error={touched.rol && errors.rol ? errors.rol : undefined}
+                  testID="register-select-rol"
                 />
 
                 <View className="mt-2">
@@ -117,6 +120,7 @@ export default function RegisterScreen() {
                     label="Crear cuenta"
                     onPress={() => handleSubmit()}
                     loading={isSubmitting || isPending}
+                    testID="register-button-submit"
                   />
                 </View>
               </View>
@@ -124,13 +128,13 @@ export default function RegisterScreen() {
           </Formik>
 
           {successMessage && (
-            <View className="mt-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
+            <View testID="register-text-success" className="mt-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
               <Text className="text-emerald-400 text-sm text-center font-medium">{successMessage}</Text>
             </View>
           )}
 
           {errorMessage && (
-            <View className="mt-4 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <View testID="register-text-error" className="mt-4 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
               <Text className="text-red-400 text-sm text-center font-medium">{errorMessage}</Text>
             </View>
           )}

@@ -7,6 +7,7 @@ type ButtonProps = {
   variant?: 'primary' | 'outline' | 'ghost' | 'glass';
   disabled?: boolean;
   icon?: React.ReactNode;
+  testID?: string;
 };
 
 export function Button({
@@ -16,6 +17,7 @@ export function Button({
   variant = 'primary',
   disabled = false,
   icon,
+  testID,
 }: ButtonProps) {
   const isDisabled = disabled || loading;
 
@@ -39,6 +41,7 @@ export function Button({
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={isDisabled}
       className={`p-2 ${containerClasses} ${isDisabled ? 'opacity-40' : ''}`}

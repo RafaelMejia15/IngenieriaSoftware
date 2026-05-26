@@ -19,6 +19,7 @@ type InputFieldProps = {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   keyboardType?: KeyboardTypeOptions;
   type?: string;
+  testID?: string;
 };
 
 export function InputField({
@@ -32,6 +33,7 @@ export function InputField({
   autoCapitalize = 'sentences',
   keyboardType = 'default',
   type,
+  testID,
 }: InputFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -76,6 +78,7 @@ export function InputField({
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
           autoCorrect={false}
+          testID={testID}
           {...(webProps as any)}
           style={Platform.OS === 'web' ? { outline: 'none', color: '#fafafa' } as any : undefined}
         />
