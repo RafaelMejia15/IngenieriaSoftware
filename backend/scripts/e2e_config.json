@@ -1,0 +1,14 @@
+{
+  "base_url": "https://uwu.dantech.com.mx",
+  "admin": {
+    "email": "admin@admin.com",
+    "password": "1234@abc"
+  },
+  "aspirante": {
+    "email": "usuario@usuario.com",
+    "password": "1234@abc"
+  },
+  "timeouts_seconds": 30,
+  "skip_upload_if_no_s3": true,
+  "report_dir": "backend/scripts/e2e_reports"
+}
