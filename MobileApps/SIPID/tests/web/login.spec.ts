@@ -35,8 +35,8 @@ test.describe('Flujo de Iniciar Sesión (Flujo Real)', () => {
     await page.goto('/');
 
     // creado en tu base de datos local
-    await page.getByTestId('login-input-email').fill('h.mejiapliego@gmail.com');
-    await page.getByTestId('login-input-password').fill('#Sistemas01');
+    await page.getByTestId('login-input-email').fill('admin@admin.com');
+    await page.getByTestId('login-input-password').fill('1234@abc');
 
     await page.getByTestId('login-button-submit').click();
 
