@@ -12,9 +12,9 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:8081',
-    trace: 'retain-on-failure',
-    video: 'retain-on-failure',
+    baseURL: process.env.BASE_URL || 'http://localhost:8081',
+    trace: 'on',
+    video: 'on',
     testIdAttribute: 'data-testid',
   },
   projects: [

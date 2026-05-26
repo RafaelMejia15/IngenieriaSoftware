@@ -1,70 +1,53 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Flujo de Iniciar Sesión', () => {
+test.describe('Flujo de Iniciar Sesión (Flujo Real)', () => {
   test.beforeEach(async ({ page }) => {
-    // Limpiar LocalStorage para asegurar que el usuario no esté logueado
     await page.goto('/');
+    // Limpiar LocalStorage para asegurar que el usuario no esté logueado
     await page.evaluate(() => window.localStorage.clear());
   });
 
-  test('debe mostrar error con credenciales inválidas y restaurar el botón', async ({ page }) => {
-    // 1. Mockear la respuesta del backend para simular un 401 Unauthorized
-    await page.route('**/login', async (route) => {
-      // Simular latencia de red
-      await new Promise(resolve => setTimeout(resolve, 500));
-      await route.fulfill({
-        status: 401,
-        contentType: 'application/json',
-        body: JSON.stringify({ detail: "Credenciales inválidas" }),
-      });
-    });
-
+  test('debe mostrar error con credenciales inválidas (Consultando Backend Real)', async ({ page }) => {
     await page.goto('/');
 
-    // Usar los testIDs inyectados
-    await page.getByTestId('login-input-email').fill('invalido@sipid.com');
-    await page.getByTestId('login-input-password').fill('BadPassword123!');
+    await page.getByTestId('login-input-email').fill('usuario_que_no_existe@sipid.com');
+    await page.getByTestId('login-input-password').fill('PasswordIncorrecta123!');
 
     // El botón debe estar habilitado inicialmente
     const submitButton = page.getByTestId('login-button-submit');
     await expect(submitButton).toBeEnabled();
 
-    // Click al botón
+    // Ejecutar acción
     await submitButton.click();
 
-    // 2. Aserción: El contenedor de error debe ser visible
+    // Aserción: El contenedor de error debe ser visible tras recibir el error del backend
     const errorContainer = page.getByTestId('login-text-error');
     await expect(errorContainer).toBeVisible();
 
-    // 3. Aserción: Texto esperado exacto
+    // Aserción: Texto esperado exacto
     await expect(errorContainer).toHaveText('Usuario o contraseña incorrecta');
+
+    // Evidencia fotográfica
+    await page.screenshot({ path: 'test-results/evidencia-login-error.png' });
   });
 
-  test('debe redirigir al hub con credenciales válidas usando API Mocking', async ({ page }) => {
-    // 1. Intercepción HTTP: Mockear respuesta 200 OK con token
-    await page.route('**/login', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          msg: "OK",
-          rol: "usuario",
-          access_token: "mock-jwt-token-12345",
-          token_type: "bearer"
-        }),
-      });
-    });
-
+  test('debe redirigir al hub con credenciales válidas (Consultando Backend Real)', async ({ page }) => {
     await page.goto('/');
 
-    await page.getByTestId('login-input-email').fill('valido@sipid.com');
-    await page.getByTestId('login-input-password').fill('GoodPassword123!');
-    
+    // creado en tu base de datos local
+    await page.getByTestId('login-input-email').fill('h.mejiapliego@gmail.com');
+    await page.getByTestId('login-input-password').fill('#Sistemas01');
+
     await page.getByTestId('login-button-submit').click();
 
-    // 2. Aserción de Cambio de URL: Esperar redirección al Hub
-    // En expo-router (web), la ruta /(tabs)/hub generalmente resuelve a /hub o similar.
+    // Aserción de Cambio de URL: Esperar redirección al Hub
     await page.waitForURL('**/hub');
     expect(page.url()).toContain('/hub');
+
+    // Validar existencia de elemento en la nueva pantalla
+    await expect(page.getByText('Administrador de Convocatorias')).toBeVisible();
+
+    // Evidencia fotográfica
+    await page.screenshot({ path: 'test-results/evidencia-login-exito.png' });
   });
 });
